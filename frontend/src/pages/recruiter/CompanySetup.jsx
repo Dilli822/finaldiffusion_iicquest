@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeftCircle, Loader2 } from "lucide-react";
 
-function CompanySetupUI() {
+function CompanySetup() {
   return (
     <div className="max-w-xl mx-auto my-10 border border-gray-300 rounded-md p-8 shadow-xl">
       <div className="flex items-center gap-12 mb-10">
@@ -54,4 +54,4 @@ function CompanySetupUI() {
   );
 }
 
-export default CompanySetupUI;
+export default CompanySetup;

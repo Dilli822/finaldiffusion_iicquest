@@ -11,7 +11,8 @@ function CompanyCreate() {
   const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   const [companyName, setCompanyName] = useState("");
-
+  const name = localStorage.getItem("username");
+  console.log(name);
   const registerNewCompany = async () => {
     try {
       const res = await axios.post(
@@ -45,20 +46,20 @@ function CompanyCreate() {
       <Input
         type="text"
         placeholder="Google, Microsoft etc."
-        onChange={(e) => {
-          setCompanyName(e.target.value);
-        }}
+        value={companyName}
+        onChange={(e) => setCompanyName(e.target.value)}
         required
       />
       <div className="flex items-center gap-2 my-10">
         <Button
           variant="outline"
           onClick={() => {
-            navigate("/admin/companies");
+            setCompanyName("");
           }}
         >
           Cancel
         </Button>
+
         <Button onClick={registerNewCompany}>Continue</Button>
       </div>
     </div>

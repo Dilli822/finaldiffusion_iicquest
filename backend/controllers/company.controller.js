@@ -34,13 +34,17 @@ export const registerCompany = async (req, res) => {
       userId,
     });
 
-    return res.status(201).json({
+    res.status(201).json({
       message: "Company registered successfully.",
       company,
       success: true,
     });
   } catch (error) {
     console.log(error);
+    res.status(500).json({
+      message: "Failed to register company!.",
+      success: false,
+    });
   }
 };
 

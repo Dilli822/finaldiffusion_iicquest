@@ -10,6 +10,11 @@ export const generateTokenAndSetCookie = (res, userId, username) => {
     sameSite: "strict",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
+  res.cookie("username", username, {
+    httpOnly: false, // client can read this cookie if needed
+    sameSite: "strict",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
 
   return token;
 };

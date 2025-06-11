@@ -1,3 +1,4 @@
+import { useAuth } from "@/context/AuthContext";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 
 const WebRTCVideoChat = () => {
@@ -8,7 +9,8 @@ const WebRTCVideoChat = () => {
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [isInCall, setIsInCall] = useState(false);
   const [currentCallTarget, setCurrentCallTarget] = useState(null);
-
+  const { user } = useAuth();
+  console.log(user.name);
   // Refs for video elements and WebRTC objects
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
@@ -42,7 +44,8 @@ const WebRTCVideoChat = () => {
     const expires = new Date(Date.now() + days * 864e5).toUTCString();
     document.cookie = name + "=" + value + "; expires=" + expires + "; path=/";
   };
-
+  let username = user.name;
+  console.log(username);
   const setDemoCookie = () => {
     const demoUsers = [
       "Alice",
@@ -55,7 +58,6 @@ const WebRTCVideoChat = () => {
     ];
 
     // Check if username exists in cookie or localStorage
-    let username = getCookie("username") || localStorage.getItem("username");
 
     if (!username) {
       // If not present, pick a random demo user and save to cookie and localStorage

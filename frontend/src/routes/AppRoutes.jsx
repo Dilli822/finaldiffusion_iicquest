@@ -42,6 +42,7 @@ import Profile from "@/pages/Profile";
 import Report from "@/pages/Report";
 import SearchPage from "@/pages/search/SearchPage";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import CompanySetup from "@/pages/recruiter/CompanySetup";
 function AppRoutes() {
   return (
     <BrowserRouter>
@@ -84,6 +85,7 @@ function AppRoutes() {
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route path="applicants" element={<Dashboard />} />
           <Route path="create-company" element={<CreateCompany />} />
+          <Route path="companies/:companyId" element={<CompanySetup />} />
         </Route>
 
         <Route path="/auth" element={<AuthLayout />}>
