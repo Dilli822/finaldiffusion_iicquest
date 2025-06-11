@@ -6,7 +6,7 @@ import {
   logout,
   register,
   resetPassword,
-  verifyEmail,
+  // verifyEmail,
 } from "../controllers/auth.controller.js";
 
 const router = express.Router();
@@ -14,9 +14,9 @@ const router = express.Router();
 router.post("/register", register);
 router.post("/login", login);
 router.post("/logout", logout);
-router.post("/verify-email", verifyEmail);
+// router.post("/verify-email", verifyEmail);
 router.post("/forgot-password", forgotPassword);
 router.post("/reset-password/:token", resetPassword);
-router.post('/webhook/clerk', clerkWebhook);
+router.post("/webhook/clerk", clerkWebhook);
 
 export default router;

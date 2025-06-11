@@ -6,7 +6,6 @@ import {
   CardContent,
   CardFooter,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { CheckCircle } from "lucide-react";
 import axios from "axios";
@@ -111,7 +110,7 @@ function Register() {
       });
 
       toast.success(res?.data.message || "Registration successful");
-      navigate("/auth/verify-email");
+      navigate("/auth/login");
     } catch (error) {
       toast.error(error.response?.data.message || "Registration failed");
     } finally {

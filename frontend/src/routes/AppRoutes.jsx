@@ -11,7 +11,7 @@ import Register from "@/pages/authPages/Register";
 import ResetPassword from "@/pages/authPages/ResetPassword";
 import SignInPage from "@/pages/authPages/sign-in";
 import SignUpPage from "@/pages/authPages/sign-up";
-import VerifyEmail from "@/pages/authPages/VerifyEmail";
+// import VerifyEmail from "@/pages/authPages/VerifyEmail";
 import Calendar from "@/pages/calendar/Calendar";
 import CartPage from "@/pages/Cart";
 import ComLayout from "@/pages/community/ComLayout";
@@ -90,7 +90,7 @@ function AppRoutes() {
            */}
           <Route path="register" element={<Register />} />
 
-          <Route path="verify-email" element={<VerifyEmail />} />
+          {/* <Route path="verify-email" element={<VerifyEmail />} /> */}
           <Route path="forgot-password" element={<ForgotPassword />} />
           <Route path="reset-password/:token" element={<ResetPassword />} />
         </Route>

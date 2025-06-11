@@ -35,10 +35,7 @@ const userSchema = new mongoose.Schema(
       type: [String],
       default: [],
     },
-    isVerified: {
-      type: Boolean,
-      default: false,
-    },
+
     imageUrl: {
       type: String,
     },
@@ -48,8 +45,7 @@ const userSchema = new mongoose.Schema(
     },
     resetPasswordToken: String,
     resetPasswordExpiresAt: Date,
-    verificationToken: String,
-    verificationTokenExpiresAt: Date,
+
     communities: [{ type: mongoose.Schema.Types.ObjectId, ref: "Community" }],
     friendList: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   },
