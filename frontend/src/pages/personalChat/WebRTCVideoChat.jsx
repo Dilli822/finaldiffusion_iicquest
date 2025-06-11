@@ -55,8 +55,10 @@ const WebRTCVideoChat = () => {
     ];
 
     // Check if username exists in cookie or localStorage
-    let username = getCookie("username") || localStorage.getItem("username");
-
+    // let username = getCookie("username") || localStorage.getItem("username");
+    let username = localStorage.getItem("username");
+    
+    
     if (!username) {
       // If not present, pick a random demo user and save to cookie and localStorage
       username = demoUsers[Math.floor(Math.random() * demoUsers.length)];
