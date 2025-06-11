@@ -49,6 +49,7 @@ const data = [
 function Dashboard() {
   return (
     <div className="max-w-5xl mx-auto">
+      <h1 className="text-3xl font-bold mb-10">List of applicants</h1>
       <Table>
         <TableCaption>A list of course you have added.</TableCaption>
         <TableHeader>

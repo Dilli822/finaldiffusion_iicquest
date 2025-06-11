@@ -153,7 +153,7 @@ export const login = async (req, res) => {
         .json({ success: false, message: "Invalid credentials" });
     }
 
-    generateTokenAndSetCookie(res, user._id);
+    generateTokenAndSetCookie(res, user._id, user.name);
 
     await user.save();
     const { password: pwd, ...rest } = user._doc;

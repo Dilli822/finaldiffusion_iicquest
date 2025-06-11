@@ -15,7 +15,7 @@ import SignUpPage from "@/pages/authPages/sign-up";
 import Calendar from "@/pages/calendar/Calendar";
 import CartPage from "@/pages/Cart";
 import ComLayout from "@/pages/community/ComLayout";
-import Dashboard from "@/pages/dashboard/Dashboard";
+import Dashboard from "@/pages/recruiter/Dashboard";
 import DiscussionForum from "@/pages/discussion/DiscussionForum";
 import Emergency from "@/pages/Emergency";
 // import Feature1 from "@/pages/features/Feature1";
@@ -35,7 +35,7 @@ import MultiStepForm from "@/pages/MultiStepForm";
 import Notice from "@/pages/Notice";
 import PageNotFound from "@/pages/PageNotFound";
 import ChatLayout from "@/pages/personalChat/ChatLayout";
-
+import CreateCompany from "../pages/recruiter/CreateCompany";
 import WebRTCVideoChat from "@/pages/personalChat/WebRTCVideoChat";
 import FeedPage from "@/pages/posts/FeedPage";
 import Profile from "@/pages/Profile";
@@ -82,7 +82,8 @@ function AppRoutes() {
         </Route>
 
         <Route path="/dashboard" element={<DashboardLayout />}>
-          <Route index element={<Dashboard />} />
+          <Route path="applicants" element={<Dashboard />} />
+          <Route path="create-company" element={<CreateCompany />} />
         </Route>
 
         <Route path="/auth" element={<AuthLayout />}>

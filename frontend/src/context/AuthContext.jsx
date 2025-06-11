@@ -124,6 +124,7 @@ export const AuthProvider = ({ children }) => {
       console.log("api-->", res);
       setUser(res?.data.user);
       localStorage.setItem("user", JSON.stringify(res?.data.user));
+      localStorage.setItem("username", res?.data.user.name);
       toast.success(res?.data?.message || "Logged in Succesfully");
       return { success: true, data: res.data };
     } catch (error) {
@@ -150,6 +151,7 @@ export const AuthProvider = ({ children }) => {
       );
       setUser(null);
       localStorage.removeItem("user");
+      localStorage.removeItem("username");
 
       // ✅ Optional: clear the cookie on logout
       Cookies.remove("onlineUsers");

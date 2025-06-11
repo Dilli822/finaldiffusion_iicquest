@@ -64,7 +64,7 @@ function DashboardLayout() {
               <h1 className="text-base">Home</h1>
             </NavLink>
             <NavLink
-              to=""
+              to="applicants"
               className={({ isActive }) =>
                 `flex items-center gap-3 p-2 rounded-md transition-all duration-200 ${
                   isActive
@@ -75,6 +75,19 @@ function DashboardLayout() {
             >
               <LayoutDashboard size={22} />
               <h1 className="text-base">Dashboard</h1>
+            </NavLink>
+            <NavLink
+              to="create-company"
+              className={({ isActive }) =>
+                `flex items-center gap-3 p-2 rounded-md transition-all duration-200 ${
+                  isActive
+                    ? "bg-blue-100 text-blue-600 font-semibold"
+                    : "text-gray-600 hover:bg-gray-200 hover:text-gray-900"
+                }`
+              }
+            >
+              <LayoutDashboard size={22} />
+              <h1 className="text-base">Create company</h1>
             </NavLink>
             <NavLink
               to="analytics"
