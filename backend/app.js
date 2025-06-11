@@ -6,6 +6,7 @@ import chatRoutes from "./routes/chat.route.js";
 import communityRoutes from "./routes/community.route.js";
 import notifiRoutes from "./routes/notification.route.js";
 import paymentRoutes from "./routes/payment.route.js";
+import postFeedRoutes from "./routes/postFeed.route.js";
 import postRoutes from "./routes/post.route.js";
 import reportRoutes from "./routes/report.route.js";
 import subscriptionRouter from "./routes/subscription.route.js";
@@ -32,6 +33,7 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/post", postRoutes);
+app.use("/api/postfeed", postFeedRoutes);
 app.use("/api/community", communityRoutes);
 app.use("/api/report", reportRoutes);
 app.use("/api/notifications", notifiRoutes);
