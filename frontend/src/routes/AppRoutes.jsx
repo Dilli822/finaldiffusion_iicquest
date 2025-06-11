@@ -78,6 +78,9 @@ function AppRoutes() {
           <Route path="/view/:broadcasterId" element={<Viewer />} />
           <Route path="/mentors" element={<MentorList />} />
           <Route path="/feed" element={<FeedPage />} />
+          <Route path="/liveshare" element={<LiveBroadcaster />} />
+
+          <Route path="/LiveShareViewer" element={<LiveShareViewer />} />
         </Route>
 
         <Route path="/dashboard" element={<DashboardLayout />}>

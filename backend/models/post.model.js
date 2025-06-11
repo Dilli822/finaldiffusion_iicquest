@@ -4,9 +4,11 @@ const postSchema = new mongoose.Schema(
   {
     title: {
       type: String,
+      required: true,
     },
     content: {
       type: String,
+      required: true,
     },
     author: {
       type: mongoose.Schema.Types.ObjectId,
@@ -17,24 +19,6 @@ const postSchema = new mongoose.Schema(
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Reply",
-      },
-    ],
-    likes: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
-    file: {
-      url: { type: String },
-      public_id: { type: String },
-      name: { type: String },
-    },
-    tags: [
-      {
-        type: String,
-        trim: true,
-        lowercase: true,
       },
     ],
   },

@@ -3,7 +3,6 @@ import Post from "../models/post.model.js";
 import Reply from "../models/reply.model.js";
 import aiService from "../services/ai.service.js";
 
-
 // ---------------------------------------------------Create Post----------------------------------------------------
 
 export const createPost = async (req, res) => {
@@ -170,4 +169,3 @@ export const handleChat = async (req, res) => {
       .json({ reply: "An error occurred while processing your request." });
   }
 };
-
