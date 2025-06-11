@@ -41,7 +41,7 @@ import FeedPage from "@/pages/posts/FeedPage";
 import Profile from "@/pages/Profile";
 import Report from "@/pages/Report";
 import SearchPage from "@/pages/search/SearchPage";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 function AppRoutes() {
   return (
     <BrowserRouter>
@@ -54,6 +54,7 @@ function AppRoutes() {
           <Route path="f2" elaeme={<Feature2 />} />
           <Route path="f3" elaeme={<Feature3 />} />
           <Route path="f4" elaeme={<Feature4 />} /> */}
+          <Route path="user" element={<Navigate to="/profile" replace />} />
           <Route path="profile" element={<Profile />} />
           <Route path="discussion" element={<DiscussionForum />} />
           <Route path="emergency" element={<Emergency />} />
@@ -78,9 +79,6 @@ function AppRoutes() {
           <Route path="/view/:broadcasterId" element={<Viewer />} />
           <Route path="/mentors" element={<MentorList />} />
           <Route path="/feed" element={<FeedPage />} />
-          <Route path="/liveshare" element={<LiveBroadcaster />} />
-
-          <Route path="/LiveShareViewer" element={<LiveShareViewer />} />
         </Route>
 
         <Route path="/dashboard" element={<DashboardLayout />}>
