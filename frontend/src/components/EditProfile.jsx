@@ -10,11 +10,12 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { FileTextIcon, Mail, Phone, User2 } from "lucide-react";
+import { BookOpen, FileTextIcon, Mail, Phone, User2 } from "lucide-react";
 import { HashLoader } from "react-spinners";
 import axios from "axios";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
+import { FaChalkboardTeacher } from "react-icons/fa";
 
 function EditProfile() {
   const { setUser } = useAuth();
@@ -171,6 +172,10 @@ function EditProfile() {
               value={inputs.phone}
               onChange={handleChange}
             />
+          </div>
+          <div className="flex space-x-4 items-center">
+            <FaChalkboardTeacher className="flex justify-center items-center"/>
+            <div className=" items-center flex justify-center">{inputs.role}</div>
           </div>
 
           <div className="flex items-center gap-2 mt-4">
