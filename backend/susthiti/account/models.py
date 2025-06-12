@@ -131,15 +131,19 @@ class AnnonymousUser(models.Model):
     phone_number = models.CharField(max_length=20, blank=True, null=True)
     dob = models.DateTimeField(null=True)
     aptitude_test_score = models.FloatField(null=True)
-    status = models.CharField(max_length=125, unique=True)
+    status = models.CharField(max_length=125, blank=True)
+    resume = models.FileField(upload_to='user/resumes/', null=True, blank=True)
 
     def save(self, *args, **kwargs):
-        if not self.username:
-            self.username = self.user.username
-        if not self.email:
-            self.email = self.user.email
-        super().save(*args, **kwargs)
-
+     if not self.username:
+        self.username = self.user.username
+     if not self.email:
+        self.email = self.user.email
+     if not self.status:
+        # generate a unique status if needed
+        import uuid
+        self.status = str(uuid.uuid4())[:8]  # Example: short UUID
+     super().save(*args, **kwargs)
 
 class MediatatorTeacherProfile(models.Model):
     user = models.ForeignKey(UserData, on_delete=models.CASCADE, related_name='mediatator_teacher_profiles')
