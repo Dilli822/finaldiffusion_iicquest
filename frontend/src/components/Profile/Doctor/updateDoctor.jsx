@@ -147,11 +147,11 @@ const DoctorProfileUpdate = () => {
   }
 
   return (
-    <Container>
+    <>
       <Card
         style={{
           padding: "24px",
-          maxWidth: "600px",
+          maxWidth: "400px",
           margin: "24px auto",
           boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
           borderRadius: "8px",
@@ -351,7 +351,7 @@ const DoctorProfileUpdate = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </Container>
+    </>
   );
 };
 

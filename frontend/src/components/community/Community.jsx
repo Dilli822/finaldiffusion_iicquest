@@ -32,6 +32,7 @@ import {
 import Header from "../header/header";
 import HeaderPublic from "../header/header_public";
 import AppFooter from "../footer/footer";
+import ads1 from "./course.gif";
 
 const API_BASE_URL = "http://localhost:8000/sushtiti";
 
@@ -49,7 +50,10 @@ function Community() {
   const [editingPost, setEditingPost] = useState(null);
   const [editingComment, setEditingComment] = useState(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [editedContent, setEditedContent] = useState({ title: "", content: "" });
+  const [editedContent, setEditedContent] = useState({
+    title: "",
+    content: "",
+  });
 
   // Comment states
   const [newComments, setNewComments] = useState({});
@@ -58,7 +62,7 @@ function Community() {
   const [searchTerm, setSearchTerm] = useState("");
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedPost, setSelectedPost] = useState(null);
-  
+
   // Confirmation dialog states
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmType, setConfirmType] = useState(null);
@@ -80,7 +84,7 @@ function Community() {
   // API Functions
   const fetchCurrentUser = async () => {
     if (!accessToken) return;
-    
+
     try {
       const response = await fetch(`${API_BASE_URL}/account/auth/user/`, {
         headers: {
@@ -100,7 +104,9 @@ function Community() {
 
   const fetchPosts = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/community/api/posts/public/list/`);
+      const response = await fetch(
+        `${API_BASE_URL}/community/api/posts/public/list/`
+      );
       if (response.ok) {
         const data = await response.json();
         setPosts(data);
@@ -218,12 +224,15 @@ function Community() {
 
   const deletePost = async (postId) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/community/api/posts/${postId}/`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/community/api/posts/${postId}/`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
 
       if (response.ok) {
         setPosts(posts.filter((post) => post.post.id !== postId));
@@ -389,7 +398,12 @@ function Community() {
             size="small"
           />
           <Button
-            onClick={() => openConfirmDialog("editComment", { postId, comment: editingComment })}
+            onClick={() =>
+              openConfirmDialog("editComment", {
+                postId,
+                comment: editingComment,
+              })
+            }
           >
             Save
           </Button>
@@ -416,7 +430,12 @@ function Community() {
               </IconButton>
               <IconButton
                 size="small"
-                onClick={() => openConfirmDialog("deleteComment", { postId, commentId: comment.id })}
+                onClick={() =>
+                  openConfirmDialog("deleteComment", {
+                    postId,
+                    commentId: comment.id,
+                  })
+                }
               >
                 <DeleteIcon fontSize="small" />
               </IconButton>
@@ -428,59 +447,68 @@ function Community() {
   );
 
   const renderPost = ({ post, comments }) => (
-    <Card key={post.id} sx={{ mb: 0 }}>
+    // Posttitle
+    <Card key={post.id} sx={{ mb: 4 }}>
       <CardContent>
         <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Box display="flex" alignItems="center">
-            <Avatar sx={{ mr: 2 }} />
-            <Box>
-              <Typography variant="h6">{post.title}</Typography>
-              <Typography variant="caption" color="textSecondary">
-                Posted by {post.author} on{" "}
-        {post.image && (
-        <img
-          src={post.image}
-          alt={post.title}
-          style={{ maxWidth: '100%', marginTop: 16 }}
-        />
-      )}
-
-      
-  </Typography>
- <Typography variant="h6">
-  
-       {post.video && (
-        <video
-          src={post.video}
-          controls
-          style={{ width: '100%', marginTop: 16 }}
-        >
-          Your browser does not support the video tag.
-        </video>
-      )}
-            
-             </Typography>
-
- 
-               <Typography variant="h6">{post.title}</Typography>
+          <Box Width="100%">
+            {/* User info: avatar and name */}
+            <Box display="flex" alignItems="center" mb={1}>
+              <Avatar sx={{ mr: 2 }} src={post.userAvatar} alt={post.author} />
+              <Box>
+                <Typography variant="subtitle1" fontWeight="bold">
+                  {post.author}
+                </Typography>
+                <Typography variant="caption" color="textSecondary">
+                  Posted on {new Date(post.created_at).toLocaleDateString()}
+                </Typography>
+              </Box>
             </Box>
+
+            {/* Title */}
+            <Typography variant="h6" fontWeight={600} mb={1}>
+              {post.title}
+            </Typography>
+
+            {/* Content */}
+            <Typography variant="body1" mb={2}>
+              {post.content}
+            </Typography>
+
+            {post.image && (
+              <img
+                src={`http://localhost:8000/${post.image}`}
+                alt={post.title}
+                style={{ maxWidth: "100%", borderRadius: 8, marginBottom: 16 }}
+              />
+            )}
+            {/* Video (if any) */}
+            {post.video && (
+              <video
+                src={post.video}
+                controls
+                style={{ width: "100%", borderRadius: 8 }}
+              >
+                Your browser does not support the video tag.
+              </video>
+            )}
           </Box>
-          
+
           {currentUser?.id === post.author && (
             <Box display="flex" alignItems="center">
               <IconButton onClick={() => handleEditClick(post)}>
                 <EditIcon fontSize="small" />
               </IconButton>
-              <IconButton onClick={() => openConfirmDialog("deletePost", { postId: post.id })}>
+              <IconButton
+                onClick={() =>
+                  openConfirmDialog("deletePost", { postId: post.id })
+                }
+              >
                 <DeleteIcon fontSize="small" />
               </IconButton>
             </Box>
           )}
         </Box>
-
-        <Typography variant="body1" sx={{ my: 2 }}>
-          {post.content}
-        </Typography>
 
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Button
@@ -491,9 +519,7 @@ function Community() {
           >
             {comments.length} Comments
           </Button>
-          <IconButton>
-            {/* <ShareIcon /> */}
-          </IconButton>
+          <IconButton>{/* <ShareIcon /> */}</IconButton>
         </Box>
 
         {expandedPostId === post.id && (
@@ -516,7 +542,9 @@ function Community() {
               <Button
                 variant="contained"
                 sx={{ ml: 1 }}
-                onClick={() => openConfirmDialog("createComment", { postId: post.id })}
+                onClick={() =>
+                  openConfirmDialog("createComment", { postId: post.id })
+                }
               >
                 Post
               </Button>
@@ -560,7 +588,10 @@ function Community() {
           );
           break;
         case "deleteComment":
-          await deleteComment(confirmationData.postId, confirmationData.commentId);
+          await deleteComment(
+            confirmationData.postId,
+            confirmationData.commentId
+          );
           break;
         default:
           console.error("Unknown confirmation type:", confirmType);
@@ -573,19 +604,58 @@ function Community() {
 
   return (
     <>
-      
       <Container maxWidth="lg">
-        <Box p={0}>
-          <Typography variant="h4" gutterBottom>
-            Post Your Queries | Videos & Reels
-          </Typography>
+        <Box display="flex" gap={4} p={0}>
+          {/* Left Box: Content - takes 75% width (9/12) */}
+          <Box flex={10} display="flex" flexDirection="column">
+            <Typography variant="h4" gutterBottom>
+              Post Queries | Videos & Reels
+            </Typography>
 
-          {/* Search Bar */}
-          
-          {/* Posts List */}
-          {filteredPosts
-            .sort((a, b) => new Date(b.post.created_at) - new Date(a.post.created_at))
-            .map(renderPost)}
+            {/* Search Bar */}
+
+            {/* Posts List */}
+            {filteredPosts
+              .sort(
+                (a, b) =>
+                  new Date(b.post.created_at) - new Date(a.post.created_at)
+              )
+              .map(renderPost)}
+          </Box>
+
+          {/* Right Box: Image - takes 25% width (3/12) */}
+          <Box
+            flex={2}
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <div>
+              <img
+                src={ads1}
+                alt="Illustration"
+                style={{ maxWidth: "100%", height: "100%", borderRadius: 8 }}
+              />
+
+              <img
+                src={ads1}
+                alt="Illustration"
+                style={{ maxWidth: "100%", height: "100%", borderRadius: 8 }}
+              />
+
+              <img
+                src={ads1}
+                alt="Illustration"
+                style={{ maxWidth: "100%", height: "100%", borderRadius: 8 }}
+              />
+
+              <img
+                src={ads1}
+                alt="Illustration"
+                style={{ maxWidth: "100%", height: "auto", borderRadius: 8 }}
+              />
+            </div>
+          </Box>
         </Box>
       </Container>
 
@@ -654,28 +724,26 @@ function Community() {
       </Dialog>
 
       {/* Universal Confirmation Dialog */}
-      <Dialog 
-        open={confirmOpen} 
+      <Dialog
+        open={confirmOpen}
         onClose={handleConfirmClose}
         maxWidth="sm"
         fullWidth
       >
         <DialogTitle>
-          {confirmType === "deletePost" || confirmType === "deleteComment" 
-            ? "Confirm Deletion" 
+          {confirmType === "deletePost" || confirmType === "deleteComment"
+            ? "Confirm Deletion"
             : "Confirm Action"}
         </DialogTitle>
         <DialogContent>
-          <Typography>
-            {getConfirmationContent()}
-          </Typography>
+          <Typography>{getConfirmationContent()}</Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleConfirmClose} color="primary">
             Cancel
           </Button>
-          <Button 
-            onClick={handleConfirm} 
+          <Button
+            onClick={handleConfirm}
             color={confirmType?.includes("delete") ? "error" : "primary"}
             variant="contained"
           >
@@ -689,7 +757,7 @@ function Community() {
         open={snackbar.open}
         autoHideDuration={6000}
         onClose={() => setSnackbar({ ...snackbar, open: false })}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
       >
         <Alert
           onClose={() => setSnackbar({ ...snackbar, open: false })}
@@ -700,8 +768,6 @@ function Community() {
           {snackbar.message}
         </Alert>
       </Snackbar>
-
-
     </>
   );
 }

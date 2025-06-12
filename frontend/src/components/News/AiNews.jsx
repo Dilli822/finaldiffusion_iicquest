@@ -17,6 +17,9 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import CloseIcon from '@material-ui/icons/Close';
+import Header from "../header/header";
+import HeaderPublic from "../header/header_public";
+import AppFooter from "../footer/footer";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -165,13 +168,16 @@ const AiNews = () => {
   };
 
   return (
+
+    <> 
+       {localStorage.getItem("accessToken") ? <Header /> : <HeaderPublic />}
     <div className={classes.root}>
       <Typography variant="h4" component="h1" className={classes.title} gutterBottom>
-        Tech Talents & Opportunities in Nepal
+        Tech Talents & Opportunities in Nepal | AI Extracted & Generated News
       </Typography>
       
-      <Box display="flex" justifyContent="center">
-        <Button
+     <div style={{ textAlign: "center"}}>
+       <Button
           variant="contained"
           color="primary"
           onClick={askGemini}
@@ -181,7 +187,9 @@ const AiNews = () => {
         >
           {loading ? "Fetching Insights..." : "Get Tech Insights"}
         </Button>
-      </Box>
+     
+     </div>
+ 
 
       {loading && !parsedData.length && (
         <Box className={classes.centerContent}>
@@ -282,7 +290,10 @@ const AiNews = () => {
           <pre>{answer}</pre>
         </Paper>
       ) : null}
-    </div>
+     </div>
+
+    <AppFooter/>
+    </>
   );
 };
 

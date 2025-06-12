@@ -18,6 +18,7 @@ import {
 import { Grid } from "@mui/material";
 import JobPosts from "../../JobPosts/JobPosts";
 import BlogPosts from "../../JobPosts/BlogsPosts";
+import JobPostsLists from "../../JobPosts/JobPostedList";
 
 const DoctorProfile = () => {
   const navigate = useNavigate();
@@ -57,14 +58,15 @@ const DoctorProfile = () => {
     <>
       <Header />
       <Container maxWidth={"lg"}>
-        <Grid container spacing={3}>
+        <Grid container spacing={1}>
           <Grid item md={4}>
             <DoctorProfileUpdate />
           </Grid>
-          <Grid item md={8}>
-            <BlogPosts/>
+          <Grid item md={9}>
+            {/* <BlogPosts/> */}
             {/* <AppointmentToDoctors /> */}
-            <JobPosts/>
+            {/* <JobPosts/> */}
+            <JobPostsLists/>
 
           </Grid>
         </Grid>

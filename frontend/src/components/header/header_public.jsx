@@ -2,7 +2,8 @@ import React, { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Close as CloseIcon } from "@material-ui/icons";
 import Notification from "../Notifications/Notifications";
-import AppLogo from "../assets/img/Logo.png"
+import AppLogo from "../assets/LLogo.png";
+
 import {
   AppBar,
   Button,
@@ -185,7 +186,7 @@ const HeaderPublic = () => {
         <Container maxWidth={"lg"}>
           <Grid
             container
-            style={{ display: "flex", alignItems: "center" }}
+            style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}
             id="mobileNav"
           >
             <Grid item xs={6}>
@@ -193,7 +194,7 @@ const HeaderPublic = () => {
                 <img
                   src={AppLogo}
                   alt=""
-                  style={{ width: "150px" }}
+                  style={{ width: "200px", maxWidth: "100%",padding: "0.5rem" }}
                 />
               </Link>
             </Grid>
@@ -205,7 +206,7 @@ const HeaderPublic = () => {
               >
                
 
-                <Grid item>
+                {/* <Grid item>
                   <Link to="/community" underline="none">
                     <Button
                       variant="text"
@@ -220,10 +221,44 @@ const HeaderPublic = () => {
                       Make Post 
                     </Button>
                   </Link>
-                </Grid>
+                </Grid> */}
+
+                <Grid item>
+                  <Link to="/community" underline="none">
+                    <Button
+                      variant="text"
+                      sx={{
+                        color: "#000",
+                        textTransform: "none",
+                        "&:hover": {
+                          backgroundColor: "transparent",
+                        },
+                      }}
+                    >
+                      Go Live 
+                    </Button>
+                  </Link>
+                </Grid> 
+
+                <Grid item>
+                  <Link to="/community" underline="none">
+                    <Button
+                      variant="text"
+                      sx={{
+                        color: "#000",
+                        textTransform: "none",
+                        "&:hover": {
+                          backgroundColor: "transparent",
+                        },
+                      }}
+                    >
+                      Watch Live 
+                    </Button>
+                  </Link>
+                </Grid> 
 
 
-                                <Grid item>
+                                {/* <Grid item>
                   <Link to="/ShareResources" underline="none">
                     <Button
                       variant="text"
@@ -238,7 +273,7 @@ const HeaderPublic = () => {
                       Share Resources 
                     </Button>
                   </Link>
-                </Grid>
+                </Grid> */}
 
                 <Grid item>
                   <Grid item>

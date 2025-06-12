@@ -11,6 +11,7 @@ import EmergencySupport from "../Emergency/Emergency";
 import LandingPage from "../LandingPage/LadingPage";
 import GeolocationComponent from "../charts/geoLocation";
 import PieChartComponent from "../charts/pieChart";
+import LandingPageLogged from "./FeedLoggedIn";
 
 import {
   AppBar,
@@ -33,6 +34,7 @@ import {
   useMediaQuery,
   createTheme, // Import createTheme
 } from "@mui/material";
+import GeminiChatBotApp from "../ChatBot/ChatBot";
 
 function Feed() {
   // Function to fetch user data and store user ID in localStorage
@@ -81,7 +83,9 @@ function Feed() {
       <Header />
       
       <Grid container spacing={2}></Grid>
-      <LandingPage />
+      <LandingPageLogged />
+
+      <GeminiChatBotApp/>
       <GeolocationComponent />
       <TipsCards />
       <AppFooter />

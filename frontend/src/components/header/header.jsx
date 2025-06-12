@@ -2,7 +2,9 @@ import React, { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Close as CloseIcon } from "@material-ui/icons";
 import Notification from "../Notifications/Notifications";
-import AppLogo from "../assets/img/Logo.png";
+// import AppLogo from "../assets/img/Logo.png";
+import AppLogo from "../assets/LLogo.png";
+
 import {
   AppBar,
   Button,
@@ -194,7 +196,7 @@ const Header = () => {
                   // src="https://raw.githubusercontent.com/aakashstha1/Susthiti/main/Logo.png"
                   src={AppLogo}
                   alt=""
-                  style={{ width: "150px" }}
+                  style={{ width: "200px" }}
                 />
               </Link>
             </Grid>
@@ -229,6 +231,8 @@ const Header = () => {
                     to="http://127.0.0.1:5500/LiveStreamBroadcast/broadcaster.html"
                     underline="none"
                   >
+                                        
+
                     <Button
                       variant="text"
                       sx={{
@@ -239,7 +243,7 @@ const Header = () => {
                         },
                       }}
                     >
-                      GO LIVE
+                      GO LIVE 
                     </Button>
                   </Link>
                 </Grid>

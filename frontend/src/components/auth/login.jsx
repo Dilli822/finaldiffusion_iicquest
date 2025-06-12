@@ -15,6 +15,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import HeaderPublic from "../header/header_public"; // Corrected import path
 import AppFooter from "../footer/footer"; // Corrected import path
+import AppLogo from "../assets/img/Logo.png";
 
 function Login() {
   const navigate = useNavigate();
@@ -76,7 +77,10 @@ function Login() {
         >
           <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
             <LockOutlinedIcon />
+          
           </Avatar>
+
+  
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
@@ -126,7 +130,7 @@ function Login() {
             <Grid container>
               <Grid item xs>
                 <Link href="/forgot-password" variant="body2">
-                  Forgot password?
+                  Forgot password? &nbsp;
                 </Link>
               </Grid>
               <Grid item>
