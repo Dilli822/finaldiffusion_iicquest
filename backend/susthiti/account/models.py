@@ -103,6 +103,9 @@ class DoctorProfile(models.Model):
     password_reset_token_generated_time = models.DateTimeField(blank=True, null=True) 
     password_reset_token_expire = models.DateTimeField(blank=True, null=True)
     
+    partnership_number = models.CharField(max_length=50, blank=True, null=True)
+    partner_names = models.TextField(blank=True, null=True, help_text="JSON array of partner names")
+    
     bio = models.TextField(blank=True)
     image = models.ImageField(upload_to='user/profile_images/', null=True, blank=True)
     address = models.CharField(max_length=100, blank=True)
@@ -128,6 +131,7 @@ class AnnonymousUser(models.Model):
     phone_number = models.CharField(max_length=20, blank=True, null=True)
     dob = models.DateTimeField(null=True)
     aptitude_test_score = models.FloatField(null=True)
+    status = models.CharField(max_length=125, unique=True)
 
     def save(self, *args, **kwargs):
         if not self.username:
