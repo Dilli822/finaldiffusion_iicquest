@@ -27,8 +27,9 @@ import GameBoard from "@/pages/games/GameBoard";
 import Quiz from "@/pages/games/Quiz";
 import Guidance from "@/pages/Guidance";
 import Home from "@/pages/home/Home";
+
 import Broadcaster from "@/pages/liveStream/Broadcaster";
-import Viewer from "@/pages/liveStream/Viewer";
+import LiveViewer from "@/pages/liveStream/BroadViewer";
 import MentorList from "@/pages/mentorship/MentorList";
 import MoodChatBot from "@/pages/MoodChat";
 import MultiStepForm from "@/pages/MultiStepForm";
@@ -42,7 +43,11 @@ import Profile from "@/pages/Profile";
 import Report from "@/pages/Report";
 import SearchPage from "@/pages/search/SearchPage";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+<<<<<<< HEAD
 import CompanySetup from "@/pages/recruiter/CompanySetup";
+=======
+
+>>>>>>> 3108cbe452940c211f7d255957762efb5292a683
 function AppRoutes() {
   return (
     <BrowserRouter>
@@ -76,8 +81,7 @@ function AppRoutes() {
           <Route path="/quiz" element={<Quiz />} />
           {/* <Route path="/video-call/:recepientId" element={<Web />} /> */}
           <Route path="/video-call" element={<WebRTCVideoChat />} />
-          <Route path="/live-stream" element={<Broadcaster />} />
-          <Route path="/view/:broadcasterId" element={<Viewer />} />
+      
           <Route path="/mentors" element={<MentorList />} />
           <Route path="/feed" element={<FeedPage />} />
         </Route>
@@ -99,6 +103,8 @@ function AppRoutes() {
           <Route path="reset-password/:token" element={<ResetPassword />} />
         </Route>
         <Route path="*" element={<PageNotFound />} />
+        <Route path="liveshare" element={<Broadcaster/>}/>
+        <Route path="liveviewer" element={<LiveViewer/>}/>
       </Routes>
     </BrowserRouter>
   );
