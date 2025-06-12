@@ -1,1 +1,0 @@
-// path('api/posts/', PostListCreateAPIView.as_view(), name='post-list-create'),
