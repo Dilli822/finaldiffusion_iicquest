@@ -485,7 +485,7 @@ function Community() {
             {/* Video (if any) */}
             {post.video && (
               <video
-                src={post.video}
+                src={`http://localhost:8000/${post.video}`}
                 controls
                 style={{ width: "100%", borderRadius: 8 }}
               >

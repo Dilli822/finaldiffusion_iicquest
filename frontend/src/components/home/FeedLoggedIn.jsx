@@ -24,7 +24,7 @@ import Banner from "../assets/Banner.png";
 import LiveShare from "../assets/LiveStreaming.jpg";
 import VideoCall from "../assets/VideoCall.jpg";
 import LimitedPosts from "../community/LimitedPosts";
-// import FeaturesPoster from "../assets/FeaturesPoster.jpg"
+import FeaturesPoster from "../assets/FeaturesPosters.jpg"
 export default function LandingPageLogged() {
   return (
     <>
@@ -91,14 +91,14 @@ export default function LandingPageLogged() {
           </div>
           <div style={{ width: "33%" }}>
             <img
-              src={VideoCall}
+              src={FeaturesPoster}
               alt="3"
               style={{ width: "100%", height: "auto", display: "block" }}
             />
           </div>
           <div style={{ width: "33%" }}>
             <img
-              src={LiveShare}
+              src={VideoCall}
               alt="3"
               style={{ width: "100%", height: "auto", display: "block" }}
             />
