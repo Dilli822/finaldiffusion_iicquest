@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebRTC Video Chat</title>
+    <style>
+        video {
+            width: 320px;
+            height: 240px;
+            border: 1px solid black;
+            margin: 10px;
+        }
+        #userList {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>WebRTC Video Chat</h1>
+    <div id="loginArea">
+        <input type="text" id="username" placeholder="Enter your username">
+        <button id="loginButton">Login</button>
+    </div>
+    <div id="callArea" style="display: none;">
+        <video id="localVideo" autoplay playsinline></video>
+        <video id="remoteVideo" autoplay playsinline></video>
+        <br>
+        <select id="userList"></select>
+        <button id="callButton" disabled>Call</button>
+        <button id="hangupButton" disabled>Hang Up</button>
+    </div>
+    
+    <script>
+        let localStream;
+        let remoteStream;
+        let peerConnection;
+        let websocket;
+        let localUsername;
+        const configuration = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]};
+        
+        const loginArea = document.getElementById('loginArea');
+        const callArea = document.getElementById('callArea');
+        const usernameInput = document.getElementById('username');
+        const loginButton = document.getElementById('loginButton');
+        const localVideo = document.getElementById('localVideo');
+        const remoteVideo = document.getElementById('remoteVideo');
+        const userList = document.getElementById('userList');
+        const callButton = document.getElementById('callButton');
+        const hangupButton = document.getElementById('hangupButton');
+        
+        loginButton.addEventListener('click', login);
+        callButton.addEventListener('click', initiateCall);
+        hangupButton.addEventListener('click', hangup);
+        
+        function login() {
+            localUsername = usernameInput.value.trim();
+            if (localUsername) {
+                websocket = new WebSocket('ws://localhost:8080');
+                websocket.onopen = () => {
+                    console.log('WebSocket connected');
+                    sendSignalingMessage({type: 'login', username: localUsername});
+                };
+                websocket.onmessage = handleSignalingMessage;
+                loginArea.style.display = 'none';
+                callArea.style.display = 'block';
+                startLocalStream();
+            }
+        }
+        
+        function startLocalStream() {
+            navigator.mediaDevices.getUserMedia({video: true, audio: true})
+                .then(stream => {
+                    localStream = stream;
+                    localVideo.srcObject = stream;
+                    callButton.disabled = false;
+                })
+                .catch(error => console.error('Error accessing media devices.', error));
+        }
+        
+        function initiateCall() {
+            const remoteUsername = userList.value;
+            if (remoteUsername && remoteUsername !== localUsername) {
+                sendSignalingMessage({
+                    type: 'call-request',
+                    target: remoteUsername
+                });
+            }
+        }
+        
+        function call(remoteUsername) {
+            peerConnection = new RTCPeerConnection(configuration);
+            
+            localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+        
+            peerConnection.ontrack = event => {
+                remoteVideo.srcObject = event.streams[0];
+                remoteStream = event.streams[0];
+            };
+        
+            peerConnection.onicecandidate = event => {
+                if (event.candidate) {
+                    sendSignalingMessage({
+                        type: 'ice-candidate',
+                        candidate: event.candidate,
+                        target: remoteUsername
+                    });
+                }
+            };
+        
+            peerConnection.createOffer()
+                .then(offer => peerConnection.setLocalDescription(offer))
+                .then(() => {
+                    sendSignalingMessage({
+                        type: 'offer',
+                        offer: peerConnection.localDescription,
+                        target: remoteUsername
+                    });
+                })
+                .catch(error => console.error('Error creating offer:', error));
+        
+            callButton.disabled = true;
+            hangupButton.disabled = false;
+        }
+        
+        function hangup() {
+            if (peerConnection) {
+                peerConnection.close();
+                peerConnection = null;
+            }
+            remoteVideo.srcObject = null;
+            callButton.disabled = false;
+            hangupButton.disabled = true;
+        }
+        
+        function sendSignalingMessage(message) {
+            if (websocket.readyState === WebSocket.OPEN) {
+                message.sender = localUsername;
+                websocket.send(JSON.stringify(message));
+            }
+        }
+        
+        function handleSignalingMessage(event) {
+    const message = JSON.parse(event.data);
+    console.log('Received message:', message);
+
+    switch(message.type) {
+        case 'user-list':
+            updateUserList(message.users);
+            break;
+        case 'call-request':
+            handleCallRequest(message.sender);
+            break;
+        case 'offer':
+            handleOffer(message.offer, message.sender);
+            break;
+        case 'answer':
+            handleAnswer(message.answer);
+            break;
+        case 'ice-candidate':
+            handleIceCandidate(message.candidate);
+            break;
+    }
+}
+
+function handleCallRequest(sender) {
+    // Alert the receiver of the call request
+    alert("getting call", message);
+    if (confirm(`Incoming call from ${sender}. Do you want to answer?`)) {
+        call(sender);
+    }
+}
+        function updateUserList(users) {
+            console.log('Updating user list:', users);
+            userList.innerHTML = '';
+            users.forEach(user => {
+                if (user !== localUsername) {
+                    const option = document.createElement('option');
+                    option.value = option.textContent = user;
+                    userList.appendChild(option);
+                }
+            });
+        }
+        
+        function handleCallRequest(sender) {
+            // Alert the receiver of the call request
+            if (confirm(`Incoming call from ${sender}. Do you want to answer?`)) {
+                call(sender);
+            }
+        }
+        
+        function handleOffer(offer, sender) {
+            peerConnection = new RTCPeerConnection(configuration);
+            localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+            peerConnection.ontrack = event => {
+                remoteVideo.srcObject = event.streams[0];
+                remoteStream = event.streams[0];
+            };
+            peerConnection.onicecandidate = event => {
+                if (event.candidate) {
+                    sendSignalingMessage({
+                        type: 'ice-candidate',
+                        candidate: event.candidate,
+                        target: sender
+                    });
+                }
+            };
+            
+            peerConnection.setRemoteDescription(new RTCSessionDescription(offer))
+                .then(() => peerConnection.createAnswer())
+                .then(answer => peerConnection.setLocalDescription(answer))
+                .then(() => {
+                    sendSignalingMessage({
+                        type: 'answer',
+                        answer: peerConnection.localDescription,
+                        target: sender
+                    });
+                })
+                .catch(error => console.error('Error handling offer:', error));
+        
+            callButton.disabled = true;
+            hangupButton.disabled = false;
+        }
+        
+        function handleAnswer(answer) {
+            peerConnection.setRemoteDescription(new RTCSessionDescription(answer))
+                .catch(error => console.error('Error handling answer:', error));
+        }
+        
+        function handleIceCandidate(candidate) {
+            peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
+                .catch(error => console.error('Error adding ICE candidate:', error));
+        }
+    </script>
+</body>
+</html>

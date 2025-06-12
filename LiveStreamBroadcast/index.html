@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>WebRTC Broadcast & Viewer Demo</title>
+<style>
+  video { width: 300px; height: 225px; background: black; }
+  textarea { width: 100%; height: 100px; }
+  button { margin: 5px 0; }
+</style>
+</head>
+<body>
+
+<h2>WebRTC Broadcast & Viewer Demo</h2>
+
+<label>
+  <input type="radio" name="role" value="broadcaster" /> Broadcaster
+</label>
+<label>
+  <input type="radio" name="role" value="viewer" /> Viewer
+</label>
+
+<div id="broadcasterUI" style="display:none;">
+  <h3>Broadcaster</h3>
+  <video id="localVideo" autoplay muted playsinline></video>
+  <button id="startBroadcastBtn">Start Broadcast</button>
+
+  <h4>Offer (send to viewer):</h4>
+  <textarea id="offerOutput" readonly></textarea>
+
+  <h4>Answer (paste from viewer):</h4>
+  <textarea id="answerInput"></textarea>
+  <button id="setAnswerBtn">Set Answer</button>
+
+  <h4>ICE Candidates (send to viewer):</h4>
+  <textarea id="iceCandidatesOutput" readonly></textarea>
+
+  <h4>ICE Candidates (paste from viewer):</h4>
+  <textarea id="iceCandidatesInput"></textarea>
+  <button id="addIceCandidatesBtn">Add ICE Candidates</button>
+</div>
+
+<div id="viewerUI" style="display:none;">
+  <h3>Viewer</h3>
+  <video id="remoteVideo" autoplay playsinline></video>
+
+  <h4>Offer (paste from broadcaster):</h4>
+  <textarea id="offerInput"></textarea>
+  <button id="setOfferBtn">Set Offer</button>
+
+  <h4>Answer (send to broadcaster):</h4>
+  <textarea id="answerOutput" readonly></textarea>
+
+  <h4>ICE Candidates (paste from broadcaster):</h4>
+  <textarea id="iceCandidatesInputViewer"></textarea>
+  <button id="addIceCandidatesBtnViewer">Add ICE Candidates</button>
+
+  <h4>ICE Candidates (send to broadcaster):</h4>
+  <textarea id="iceCandidatesOutputViewer" readonly></textarea>
+</div>
+
+<script>
+let peerConnection;
+const iceConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+
+const localVideo = document.getElementById('localVideo');
+const remoteVideo = document.getElementById('remoteVideo');
+
+const broadcasterUI = document.getElementById('broadcasterUI');
+const viewerUI = document.getElementById('viewerUI');
+
+document.querySelectorAll('input[name="role"]').forEach(input => {
+  input.addEventListener('change', () => {
+    if (input.value === 'broadcaster') {
+      broadcasterUI.style.display = 'block';
+      viewerUI.style.display = 'none';
+      setupBroadcaster();
+    } else {
+      viewerUI.style.display = 'block';
+      broadcasterUI.style.display = 'none';
+      setupViewer();
+    }
+  });
+});
+
+function setupBroadcaster() {
+  const startBroadcastBtn = document.getElementById('startBroadcastBtn');
+  const offerOutput = document.getElementById('offerOutput');
+  const answerInput = document.getElementById('answerInput');
+  const setAnswerBtn = document.getElementById('setAnswerBtn');
+  const iceCandidatesOutput = document.getElementById('iceCandidatesOutput');
+  const iceCandidatesInput = document.getElementById('iceCandidatesInput');
+  const addIceCandidatesBtn = document.getElementById('addIceCandidatesBtn');
+
+  peerConnection = new RTCPeerConnection(iceConfig);
+
+  peerConnection.onicecandidate = event => {
+    if (event.candidate) {
+      iceCandidatesOutput.value += JSON.stringify(event.candidate) + '\n';
+    }
+  };
+
+  setAnswerBtn.onclick = async () => {
+    const answer = answerInput.value;
+    if (!answer) return alert('Paste answer SDP here');
+    try {
+      await peerConnection.setRemoteDescription(new RTCSessionDescription(JSON.parse(answer)));
+      alert('Answer set successfully');
+    } catch (e) {
+      alert('Error setting remote description: ' + e);
+    }
+  };
+
+  addIceCandidatesBtn.onclick = async () => {
+    const candidatesText = iceCandidatesInput.value.trim();
+    if (!candidatesText) return alert('Paste ICE candidates here');
+    const lines = candidatesText.split('\n');
+    try {
+      for (const line of lines) {
+        if (!line) continue;
+        const candidate = new RTCIceCandidate(JSON.parse(line));
+        await peerConnection.addIceCandidate(candidate);
+      }
+      alert('ICE candidates added');
+    } catch (e) {
+      alert('Error adding ICE candidates: ' + e);
+    }
+  };
+
+  startBroadcastBtn.onclick = async () => {
+    try {
+      const localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      localVideo.srcObject = localStream;
+      localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+
+      const offer = await peerConnection.createOffer();
+      await peerConnection.setLocalDescription(offer);
+
+      offerOutput.value = JSON.stringify(peerConnection.localDescription);
+    } catch (e) {
+      alert('Error starting broadcast: ' + e);
+    }
+  };
+}
+
+function setupViewer() {
+  const offerInput = document.getElementById('offerInput');
+  const setOfferBtn = document.getElementById('setOfferBtn');
+  const answerOutput = document.getElementById('answerOutput');
+  const iceCandidatesInputViewer = document.getElementById('iceCandidatesInputViewer');
+  const addIceCandidatesBtnViewer = document.getElementById('addIceCandidatesBtnViewer');
+  const iceCandidatesOutputViewer = document.getElementById('iceCandidatesOutputViewer');
+
+  peerConnection = new RTCPeerConnection(iceConfig);
+
+  peerConnection.onicecandidate = event => {
+    if (event.candidate) {
+      iceCandidatesOutputViewer.value += JSON.stringify(event.candidate) + '\n';
+    }
+  };
+
+  peerConnection.ontrack = event => {
+    const [remoteStream] = event.streams;
+    remoteVideo.srcObject = remoteStream;
+  };
+
+  setOfferBtn.onclick = async () => {
+    if (!offerInput.value) return alert('Paste offer SDP here');
+    try {
+      await peerConnection.setRemoteDescription(new RTCSessionDescription(JSON.parse(offerInput.value)));
+      const answer = await peerConnection.createAnswer();
+      await peerConnection.setLocalDescription(answer);
+      answerOutput.value = JSON.stringify(peerConnection.localDescription);
+      alert('Answer created, send it back to broadcaster');
+    } catch (e) {
+      alert('Error handling offer: ' + e);
+    }
+  };
+
+  addIceCandidatesBtnViewer.onclick = async () => {
+    const candidatesText = iceCandidatesInputViewer.value.trim();
+    if (!candidatesText) return alert('Paste ICE candidates here');
+    const lines = candidatesText.split('\n');
+    try {
+      for (const line of lines) {
+        if (!line) continue;
+        const candidate = new RTCIceCandidate(JSON.parse(line));
+        await peerConnection.addIceCandidate(candidate);
+      }
+      alert('ICE candidates added');
+    } catch (e) {
+      alert('Error adding ICE candidates: ' + e);
+    }
+  };
+}
+</script>
+
+</body>
+</html>

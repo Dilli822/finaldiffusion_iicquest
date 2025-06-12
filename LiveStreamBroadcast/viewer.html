@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Viewer</title>
+</head>
+<body>
+  <h1>Viewer</h1>
+  <input id="broadcasterIdInput" placeholder="Enter Broadcaster ID" />
+  <button id="connectBtn">Connect</button>
+  <button id="leaveBtn" disabled>Leave</button>
+  <br><br>
+  <video id="remoteVideo" autoplay playsinline style="width: 600px; border: 1px solid black;"></video>
+
+  <script>
+    let ws;
+    let pc;
+    let viewerId;
+    let broadcasterId;
+
+    document.getElementById('connectBtn').onclick = () => {
+      broadcasterId = document.getElementById('broadcasterIdInput').value.trim();
+      if (!broadcasterId) {
+        alert('Please enter broadcaster ID');
+        return;
+      }
+      start();
+    };
+
+    document.getElementById('leaveBtn').onclick = () => {
+      leaveStream();
+    };
+
+    async function start() {
+      ws = new WebSocket('ws://localhost:9080');
+
+      ws.onopen = () => {
+        ws.send(JSON.stringify({ type: 'viewer', broadcasterId }));
+      };
+
+      ws.onmessage = async (event) => {
+        const data = JSON.parse(event.data);
+
+        if (data.type === 'viewer-id') {
+          viewerId = data.viewerId;
+          createPeerConnection();
+          document.getElementById('leaveBtn').disabled = false;
+        }
+        else if (data.type === 'offer') {
+          await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
+          const answer = await pc.createAnswer();
+          await pc.setLocalDescription(answer);
+
+          ws.send(JSON.stringify({
+            type: 'answer',
+            viewerId,
+            broadcasterId,
+            answer
+          }));
+        }
+        else if (data.type === 'ice-candidate') {
+          if (data.candidate) {
+            await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+          }
+        }
+        else if (data.type === 'broadcaster-disconnected') {
+          alert('Broadcaster has gone offline.');
+          leaveStream();
+        }
+        else if (data.type === 'error') {
+          alert(data.message || 'An error occurred');
+          leaveStream();
+        }
+      };
+
+      ws.onerror = () => {
+        alert('WebSocket connection error');
+        leaveStream();
+      };
+
+      ws.onclose = () => {
+        alert('Disconnected from server');
+        leaveStream();
+      };
+    }
+
+    function createPeerConnection() {
+      pc = new RTCPeerConnection({
+        iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+      });
+
+      pc.ontrack = (event) => {
+        const remoteVideo = document.getElementById('remoteVideo');
+        if (remoteVideo.srcObject !== event.streams[0]) {
+          remoteVideo.srcObject = event.streams[0];
+        }
+      };
+
+      pc.onicecandidate = (event) => {
+        if (event.candidate) {
+          ws.send(JSON.stringify({
+            type: 'ice-candidate',
+            to: 'broadcaster',
+            broadcasterId,
+            candidate: event.candidate
+          }));
+        }
+      };
+
+      pc.onconnectionstatechange = () => {
+        if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
+          alert('Connection to broadcaster lost.');
+          leaveStream();
+        }
+      };
+    }
+
+    function leaveStream() {
+      if (pc) {
+        pc.close();
+        pc = null;
+      }
+
+      const remoteVideo = document.getElementById('remoteVideo');
+      if (remoteVideo.srcObject) {
+        remoteVideo.srcObject.getTracks().forEach(track => track.stop());
+        remoteVideo.srcObject = null;
+      }
+
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: 'leave', viewerId, broadcasterId }));
+        ws.close();
+      }
+
+      document.getElementById('leaveBtn').disabled = true;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Broadcaster</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    #viewerList { margin-top: 10px; border: 1px solid #aaa; padding: 10px; width: 300px; }
+    #controls { margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Broadcaster</h1>
+
+  <video id="localVideo" autoplay muted playsinline style="width: 600px; border: 1px solid black;"></video>
+
+  <div id="controls">
+    <button onclick="stopStreaming()">Stop Streaming</button>
+    <p><strong>Share this stream:</strong> <span id="streamUrl"></span></p>
+  </div>
+
+  <h3>Connected Viewers (<span id="viewerCount">0</span>):</h3>
+  <div id="viewerList"></div>
+
+  <script>
+    const broadcasterId = prompt("Enter broadcaster ID:", "dilli");
+    const ws = new WebSocket('ws://localhost:9080');
+
+    let localStream;
+    const peerConnections = {}; // viewerId => RTCPeerConnection
+    const viewers = new Map();  // viewerId => name or object
+
+    ws.onopen = () => {
+      ws.send(JSON.stringify({ type: 'broadcaster', broadcasterId }));
+      startLocalStream();
+
+      document.getElementById('streamUrl').textContent =
+        `ws://localhost:9080/viewer?broadcasterId=${broadcasterId}`;
+    };
+
+    ws.onmessage = async (event) => {
+      const data = JSON.parse(event.data);
+
+      if (data.type === 'viewer') {
+        const { viewerId, viewerName = `Viewer-${viewerId.substring(0, 4)}` } = data;
+        viewers.set(viewerId, viewerName);
+        updateViewerList();
+        await handleViewer(viewerId);
+      }
+      else if (data.type === 'answer') {
+        const pc = peerConnections[data.viewerId];
+        if (pc) await pc.setRemoteDescription(new RTCSessionDescription(data.answer));
+      }
+      else if (data.type === 'ice-candidate') {
+        const pc = peerConnections[data.viewerId];
+        if (pc && data.candidate) await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+      }
+      else if (data.type === 'viewer-left') {
+        viewers.delete(data.viewerId);
+        updateViewerList();
+        if (peerConnections[data.viewerId]) {
+          peerConnections[data.viewerId].close();
+          delete peerConnections[data.viewerId];
+        }
+      }
+    };
+
+    async function startLocalStream() {
+      try {
+        localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        document.getElementById('localVideo').srcObject = localStream;
+      } catch (err) {
+        alert('Could not get local media: ' + err.message);
+      }
+    }
+
+    async function handleViewer(viewerId) {
+      const pc = new RTCPeerConnection({
+        iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+      });
+      peerConnections[viewerId] = pc;
+
+      localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+
+      pc.onicecandidate = (event) => {
+        if (event.candidate) {
+          ws.send(JSON.stringify({
+            type: 'ice-candidate',
+            to: 'viewer',
+            viewerId,
+            candidate: event.candidate
+          }));
+        }
+      };
+
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+
+      ws.send(JSON.stringify({
+        type: 'offer',
+        viewerId,
+        broadcasterId,
+        offer
+      }));
+    }
+
+    function updateViewerList() {
+      const listDiv = document.getElementById('viewerList');
+      listDiv.innerHTML = '';
+      viewers.forEach((name, id) => {
+        const div = document.createElement('div');
+        div.textContent = `👤 ${name} (ID: ${id})`;
+        listDiv.appendChild(div);
+      });
+      document.getElementById('viewerCount').textContent = viewers.size;
+    }
+
+    function stopStreaming() {
+      if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
+      }
+      Object.values(peerConnections).forEach(pc => pc.close());
+      ws.close();
+      alert('Streaming stopped');
+      location.reload(); // Optionally refresh the page
+    }
+  </script>
+</body>
+</html>
