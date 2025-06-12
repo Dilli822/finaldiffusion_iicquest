@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Susthiti Open Live Chat</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+</head>
+
+<body>
+  <span class="text-center mb-4 position-fixed bg-light p-3" style="z-index: 9; width: 100%;">
+    <h3 class="m-0 p-0"> <img src="https://raw.githubusercontent.com/aakashstha1/Susthiti/main/Logo.png" alt="" style="width: 150px;"> Community | Open Live Online Chat
+    System</h3>
+    <span> All Users Here are anonymous! We respect privacy & Care Mental Well-being.  </span>
+</span>
+  <div class="container-fluid">
+    <br>
+    <br>
+    <br>
+    <div class="row justify-content-center mt-5">
+      <div class="col-lg-8 col-md-10 col-sm-12">
+
+        <div class="card">
+          <div class="card-body">
+            <ul id="messages" class="list-unstyled"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="fixed-bottom bg-light mb-0">
+
+    <div class="container">
+      <form id="form" class="d-flex align-items-center mt-2 p-2">
+        <span class="username font-weight-bold mr-3" id="username"></span>
+        <input id="input" class="form-control ms-3" autocomplete="off" placeholder="Type your message..." />
+        &nbsp;
+        <button type="submit" class="btn btn-success">Send</button>
+      </form>
+    </div>
+
+  </footer>
+
+  <!-- Bootstrap and Socket.IO scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+  <!-- <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script> -->
+
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script>
+  const socket = io('http://localhost:3000'); // not default
+
+    //const socket = io();
+    const username = `User_${Math.floor(Math.random() * 1000)}`; // Generate a random username
+
+    document.getElementById('username').textContent = username;
+
+    const form = document.getElementById('form');
+    const input = document.getElementById('input');
+    const messages = document.getElementById('messages');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (input.value) {
+        const messageData = {
+          username,
+          message: input.value,
+          timestamp: new Date()  // Format timestamp (HH:mm)
+        };
+        socket.emit('chat message', messageData);
+
+        // Store message in local storage
+        const storedMessages = JSON.parse(localStorage.getItem('chatMessages')) || [];
+        storedMessages.push(messageData);
+        localStorage.setItem('chatMessages', JSON.stringify(storedMessages));
+
+        input.value = '';
+      }
+    });
+
+    socket.on('chat message', (msg) => {
+      const messageElement = createMessageElement(msg);
+      messages.appendChild(messageElement);
+      window.scrollTo(0, document.body.scrollHeight);
+    });
+
+    // Function to create message HTML element
+    function createMessageElement(msg) {
+      const li = document.createElement('li');
+      li.classList.add('message', 'my-1', 'p-1', 'rounded');
+      li.innerHTML = `
+      <div>
+        <span class="username font-weight-bold"> <b>  ${msg.username} </b>:</span>
+        <span class="text-xl-start">   ${msg.message}</span> <br>
+          <span class="meta text-muted small">${msg.timestamp} or ${formatDate(new Date())}</span>
+      <hr/>
+    `;
+      return li;
+    }
+
+    // Function to format date as DD MMM YYYY
+    function formatDate(date) {
+      const options = { day: 'numeric', month: 'short', year: 'numeric' };
+      return date.toLocaleDateString('en-GB', options);
+    }
+
+    // Load stored messages from local storage on page load
+    window.onload = () => {
+      const storedMessages = JSON.parse(localStorage.getItem('chatMessages')) || [];
+      storedMessages.forEach(msg => {
+        const messageElement = createMessageElement(msg);
+        messages.appendChild(messageElement);
+      });
+    };
+  </script>
+  <script>
+    const chatMessages = JSON.parse(localStorage.getItem('chatMessages')) || [];
+    console.log(chatMessages)
+    const formattedMessages = chatMessages.map(message => ({
+      username: message.username,
+      original_chat_datetimestamp: message.timestamp, // Assuming "timestamp" field holds the combined date and time
+      message: message.message
+    }));
+
+
+    const latestMessage = formattedMessages[formattedMessages.length - 1];
+
+    console.log(latestMessage);
+
+
+    // Function to send messages to Django backend API
+    const sendMessagesToAPI = async () => {
+
+      if (chatMessages.length > 0) {
+        try {
+          const response = await fetch('http://localhost:8000/api/chat-messages/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(latestMessage),
+          });
+
+          if (response.ok) {
+            console.log('Messages sent to API successfully:', storedMessages);
+            localStorage.removeItem('chatMessages'); // Clear local storage after successful send
+          } else {
+            throw new Error('Failed to send messages to API');
+          }
+        } catch (error) {
+          console.error('Error sending messages to API:', error);
+
+        }
+      };
+    }
+
+    // Set interval to send messages to API every 2 minutes (120,000 milliseconds)
+    setInterval(sendMessagesToAPI, 25000);
+
+
+  </script>
+
+
+
+</body>
+
+</html>
