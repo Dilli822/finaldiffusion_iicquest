@@ -225,7 +225,7 @@ const Header = () => {
 
 
                 <Grid item>
-                  <Link to="http://127.0.0.1:5501/Call%20The%20Active%20Users/rtc.html" underline="none">
+                  <Link to="http://127.0.0.1:5500/VideoCall/rtc.html" underline="none">
                     <Button
                       variant="text"
                       sx={{
@@ -236,11 +236,98 @@ const Header = () => {
                         },
                       }}
                     >
-                  Go Live 
+                  Online Video Chat/Stay Online 
                     </Button>
                   </Link>
                 </Grid>
 
+                 <Grid item>
+                  <Link to="/historgramtalent" underline="none">
+                    <Button
+                      variant="text"
+                      sx={{
+                        color: "#000",
+                        textTransform: "none",
+                        "&:hover": {
+                          backgroundColor: "transparent",
+                        },
+                      }}
+                    >
+                  Talent Seeker and Talent Regions
+                    </Button>
+                  </Link>
+                </Grid>
+
+
+                 <Grid item>
+                  <Link to="/ainews" underline="none">
+                    <Button
+                      variant="text"
+                      sx={{
+                        color: "#000",
+                        textTransform: "none",
+                        "&:hover": {
+                          backgroundColor: "transparent",
+                        },
+                      }}
+                    >
+                  AiNews
+                    </Button>
+                  </Link>
+                </Grid>
+
+ <Grid item>
+                  <Link to="http://127.0.0.1:5500/VideoCall/rtc.html" underline="none">
+                    <Button
+                      variant="text"
+                      sx={{
+                        color: "#000",
+                        textTransform: "none",
+                        "&:hover": {
+                          backgroundColor: "transparent",
+                        },
+                      }}
+                    >
+                  Online Video Chat/Stay Online 
+                    </Button>
+                  </Link>
+                </Grid>
+    
+
+     <Grid item>
+                  <Link to="http://127.0.0.1:5500/LiveStreamBroadcast/broadcaster.html" underline="none">
+                    <Button
+                      variant="text"
+                      sx={{
+                        color: "#000",
+                        textTransform: "none",
+                        "&:hover": {
+                          backgroundColor: "transparent",
+                        },
+                      }}
+                    >
+                  GO LIVE
+                    </Button>
+                  </Link>
+                </Grid>
+
+
+     <Grid item>
+                  <Link to="http://127.0.0.1:5500/LiveStreamBroadcast/viewer.html" underline="none">
+                    <Button
+                      variant="text"
+                      sx={{
+                        color: "#000",
+                        textTransform: "none",
+                        "&:hover": {
+                          backgroundColor: "transparent",
+                        },
+                      }}
+                    >
+              WATCH LIVE 
+                    </Button>
+                  </Link>
+                </Grid>
 
                              <Grid item>
                                   <Link to="/ShareResources" underline="none">
