@@ -100,24 +100,7 @@ const DoctorProfileUpdate = () => {
 
 
 
-    {
-        "doctor_id": 1,
-        "username": "DOCTOR",
-        "email": "doctor1@gmail.com",
-        "first_name": "",
-        "last_name": "",
-        "rating": null,
-        "password_reset_token": null,
-        "password_reset_token_generated_time": null,
-        "password_reset_token_expire": null,
-        "partnership_number": null,
-        "partner_names": null,
-        "bio": "",
-        "image": null,
-        "address": "",
-        "phone_number": null,
-
-    }
+  
   const handleSubmit = async (event) => {
     event.preventDefault();
     const doctorId = profileData.doctor_id; // Get the doctor_id for the PUT request
