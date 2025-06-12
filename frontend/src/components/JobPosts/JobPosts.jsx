@@ -32,6 +32,7 @@ import {
 import Header from "../header/header";
 import HeaderPublic from "../header/header_public";
 import AppFooter from "../footer/footer";
+import { Collapse } from '@mui/material';
 
 const API_BASE_URL = "http://localhost:8000/sushtiti";
 
@@ -41,6 +42,10 @@ function JobPosts() {
   const accessToken = localStorage.getItem("accessToken");
 
   // Post states
+
+  const [showPosts, setShowPosts] = useState(false);
+  const togglePosts = () => setShowPosts(prev => !prev);
+
   const [posts, setPosts] = useState([]);
   const [expandedPostId, setExpandedPostId] = useState(null);
   const [newPost, setNewPost] = useState({ title: "", content: "" });
@@ -566,7 +571,7 @@ function JobPosts() {
 
   return (
     <>
-      {accessToken ? <Header /> : <HeaderPublic />}
+      {/* {accessToken ? <Header /> : <HeaderPublic />} */}
       <Container maxWidth="lg">
         <Box p={4}>
           <Typography variant="h4" gutterBottom>
@@ -642,9 +647,19 @@ function JobPosts() {
           </Card>
 
           {/* Posts List */}
-          {filteredPosts
-            .sort((a, b) => new Date(b.post.created_at) - new Date(a.post.created_at))
-            .map(renderPost)}
+ <Button variant="contained" onClick={togglePosts}>
+        {showPosts ? 'Hide Posts' : 'Show Posts'}
+      </Button>
+
+      <Collapse in={showPosts}>
+        <Box mt={2}>
+         {filteredPosts
+  .sort((a, b) => new Date(b.post.created_at) - new Date(a.post.created_at))
+  .map(renderPost)}
+        </Box>
+        
+      </Collapse>
+
         </Box>
       </Container>
 
@@ -760,7 +775,7 @@ function JobPosts() {
         </Alert>
       </Snackbar>
 
-      <AppFooter />
+      {/* <AppFooter /> */}
     </>
   );
 }

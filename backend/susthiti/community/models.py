@@ -12,7 +12,7 @@ class Post(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     slug = models.SlugField(unique=True, max_length=255)
     
-    category = models.CharField(max_length=255, unique=False,blank=True)
+    category = models.CharField(max_length=255, unique=False, blank=True)
     
     likes = models.ManyToManyField(get_user_model(), related_name='liked_posts', blank=True)
 
