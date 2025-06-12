@@ -133,6 +133,7 @@ class AnnonymousUser(models.Model):
     aptitude_test_score = models.FloatField(null=True)
     status = models.CharField(max_length=125, blank=True)
     resume = models.FileField(upload_to='user/resumes/', null=True, blank=True)
+    externalURL = models.TextField(max_length=50, blank=True)
 
     def save(self, *args, **kwargs):
      if not self.username:
