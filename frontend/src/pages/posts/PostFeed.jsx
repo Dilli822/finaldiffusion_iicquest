@@ -1,16 +1,20 @@
-import React from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { MessageSquare, ThumbsUp } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ShareButton from "@/components/ShareButton";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { MessageSquare, ThumbsUp, Edit2 } from "lucide-react";
 
-function PostFeed({ post }) {
+function PostFeed({ post, onEdit }) {
   const postUrl = `${window.location.origin}/post/${post.id}`;
+
+  // Assume you have access to the authenticated user's ID
+  // Replace with actual logic to get the current user's ID (e.g., from context or auth state)
+  const currentUserId = "your-user-id"; // Replace with actual user ID from auth
+  const isAuthor = post.author?._id === currentUserId; // Adjust based on your post data structure
 
   const renderMedia = () => {
     const fileUrl = post.file?.url;
-    if (!fileUrl) return null; // Check first to avoid error
+    if (!fileUrl) return null;
 
     const isVideo = fileUrl.match(/\.(mp4|webm|ogg)$/i);
     const isImage = fileUrl.match(/\.(jpg|jpeg|png|gif|bmp|webp)$/i);
@@ -21,7 +25,8 @@ function PostFeed({ post }) {
           controls
           className="rounded-md max-h-[400px] w-full object-cover mb-3"
         >
-          
+          <source src={fileUrl} type="video/mp4" />
+          Your browser does not support the video tag.
         </video>
       );
     }
@@ -40,13 +45,13 @@ function PostFeed({ post }) {
   };
 
   return (
-    <Card className="w-full  mb-6 shadow-md">
+    <Card className="w-full mb-6 shadow-md">
       <CardContent>
         {/* User Info */}
         <div className="flex items-center gap-3 mb-3">
           <Avatar>
-            <AvatarImage src={post.authorImage || "/default-user.png"} />
-            <AvatarFallback>{post.authorName[0]}</AvatarFallback>
+            <AvatarImage src={post?.authorImage || "/default-user.png"} />
+            <AvatarFallback>{post?.authorName}</AvatarFallback>
           </Avatar>
           <div>
             <p className="font-medium">{post.authorName}</p>
@@ -56,7 +61,10 @@ function PostFeed({ post }) {
           </div>
         </div>
 
-        {/* Post Text */}
+        {/* Post Title */}
+        {post.title && <h2 className="text-lg font-semibold mb-2">{post.title}</h2>}
+
+        {/* Post Content */}
         {post.content && <p className="text-base mb-3">{post.content}</p>}
 
         {/* Media (if any) */}
@@ -87,10 +95,20 @@ function PostFeed({ post }) {
             Comment
           </Button>
           <ShareButton url={postUrl} />
+          {isAuthor && (
+            <Button
+              variant="ghost"
+              className="flex items-center gap-1"
+              onClick={() => onEdit(post)}
+            >
+              <Edit2 size={18} />
+              Edit
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>
   );
 }
 
-export default PostFeed;
+export default PostFeed;

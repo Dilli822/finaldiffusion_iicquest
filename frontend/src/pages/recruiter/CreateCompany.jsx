@@ -11,18 +11,13 @@ function CompanyCreate() {
   const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   const [companyName, setCompanyName] = useState("");
-  const name = localStorage.getItem("username");
-  console.log(name);
+
   const registerNewCompany = async () => {
     try {
       const res = await axios.post(
         `${API_URL}/register`,
-        {
-          companyName,
-        },
-        {
-          withCredentials: true,
-        }
+        { companyName },
+        { withCredentials: true }
       );
       if (res.data.success) {
         toast.success(res.data.message);
@@ -31,9 +26,10 @@ function CompanyCreate() {
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Something went wrong");
     }
   };
+
   return (
     <div className="max-w-5xl mx-auto">
       <div className="my-10">

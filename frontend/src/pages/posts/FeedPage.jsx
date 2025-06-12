@@ -1,194 +1,217 @@
-import React, { useState, useRef } from "react";
-import axios from "axios";
-import PostFeed from "./PostFeed";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import axios from "axios";
 import { ImageIcon, VideoIcon } from "lucide-react";
-import { toast } from "sonner";
+import { useEffect, useRef, useState } from "react";
+import PostFeed from "./PostFeed";
 
-function FeedPage() {
-  const API_URL = import.meta.env.VITE_API_URL;
-
-  const [posts, setPosts] = useState([
-    {
-      id: 1,
-      authorName: "John Doe",
-      authorImage: "",
-      content: "Just posted something amazing! 🎉",
-      createdAt: new Date(),
-      tags: ["announcement", "fun", "update"],
-    },
-    {
-      id: 2,
-      authorName: "Jane Smith",
-      authorImage: "",
-      content: "A beautiful sunset I captured!",
-      createdAt: new Date(),
-      file: {
-        url: "https://img.freepik.com/free-photo/sunset-time-tropical-beach-sea-with-coconut-palm-tree_74190-1075.jpg",
-      },
-      tags: ["sunset", "nature", "photography"],
-    },
-    {
-      id: 3,
-      authorName: "Alex Johnson",
-      authorImage: "",
-      content: "Watch this quick demo 🚀",
-      createdAt: new Date(),
-      file: {
-        url: "https://www.w3schools.com/html/mov_bbb.mp4",
-      },
-      tags: ["demo", "video", "tech"],
-    },
-  ]);
-
+function FeedPage({ clicked }) {
+  const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState({
+    title: "",
     content: "",
     file: null,
   });
-
+  const [editPost, setEditPost] = useState(null); // State to track post being edited
   const fileInputRef = useRef(null);
 
-  const handleContentChange = (e) => {
-    setNewPost({ ...newPost, content: e.target.value });
+  // Fetch posts on mount
+  useEffect(() => {
+    const fetchMyPosts = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/api/postFeed/posts", {
+          withCredentials: true,
+        });
+        console.log("fetch posts response-->", response);
+        setPosts(response.data.posts);
+      } catch (error) {
+        console.log("fetch posts error-->", error);
+      }
+    };
+    fetchMyPosts();
+  }, []);
+
+  console.log("posts fetched-->", posts);
+
+  const videoPosts = posts.filter((post) => post.file?.type === "video");
+  const normalPosts = posts.filter((post) => !post.file || post.file.type === "image");
+
+  // Handle input changes for create/edit form
+  const handleInputChange = (e, field) => {
+    if (editPost) {
+      setEditPost({ ...editPost, [field]: e.target.value });
+    } else {
+      setNewPost({ ...newPost, [field]: e.target.value });
+    }
   };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setNewPost({ ...newPost, file });
+      if (editPost) {
+        setEditPost({ ...editPost, file });
+      } else {
+        setNewPost({ ...newPost, file });
+      }
     }
   };
 
-  // Helper to extract hashtags from content text
-  const extractTagsFromContent = (text) => {
-    const regex = /#(\w+)/g;
-    const tags = [];
-    let match;
-    while ((match = regex.exec(text)) !== null) {
-      tags.push(match[1].toLowerCase());
-    }
-    return tags;
-  };
-
+  // Handle form submission for create or update
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!newPost.content && !newPost.file) return;
+    const isEditing = !!editPost;
+    const postData = isEditing ? editPost : newPost;
+
+    if (!postData.title || (!postData.content && !postData.file)) {
+      alert("Title and either content or a file are required!");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("title", postData.title.trim());
+    formData.append("content", postData.content.trim());
+    if (postData.file) {
+      formData.append("file", postData.file);
+    }
 
     try {
-      const formData = new FormData();
-      if (newPost.content) formData.append("content", newPost.content);
-
-      // Extract tags from hashtags in content
-      const extractedTags = extractTagsFromContent(newPost.content);
-      if (extractedTags.length > 0) {
-        formData.append("tags", extractedTags.join(","));
+      let response;
+      if (isEditing) {
+        // Update post
+        response = await axios.put(
+          `http://localhost:8000/api/postFeed/update/${postData.id}`,
+          formData,
+          { withCredentials: true }
+        );
+      } else {
+        // Create post
+        response = await axios.post(
+          "http://localhost:8000/api/postFeed/create-post",
+          formData,
+          { withCredentials: true }
+        );
       }
-
-      if (newPost.file) {
-        formData.append("file", newPost.file);
-      }
-
-      const response = await axios.post(
-        `${API_URL}/post/create-content`,
-        formData,
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
 
       if (response.data.success) {
-        const newPostData = {
-          ...response.data.post,
-          tags: extractTagsFromContent(response.data.post.content),
+        console.log(isEditing ? "Post updated successfully" : "Post created successfully");
+        const { post } = response.data;
+        const formattedPost = {
+          id: post._id,
+          authorName: post.author?.username || "You", // Adjust based on your backend response
+          authorImage: post.author?.image || "/default-user.png",
+          title: post.title,
+          content: post.content,
+          createdAt: new Date(post.createdAt),
+          file: post.file
+            ? {
+                url: post.file.url,
+                type: post.file.type,
+              }
+            : undefined,
+          tags: post.tags || [],
         };
 
-        setPosts((prevPosts) => [newPostData, ...prevPosts]);
-        setNewPost({ content: "", file: null });
-      } else {
-        toast.error("Failed to create post.");
+        if (isEditing) {
+          // Update the post in the state
+          setPosts(posts.map((p) => (p.id === post._id ? formattedPost : p)));
+          setEditPost(null); // Clear edit mode
+        } else {
+          // Add new post to the state
+          setPosts([formattedPost, ...posts]);
+          setNewPost({ title: "", content: "", file: null });
+        }
+
+        if (fileInputRef.current) {
+          fileInputRef.current.value = ""; // Reset file input
+        }
       }
     } catch (error) {
-      console.error("Error creating post:", error);
-      toast.error("Error creating post. Please try again.");
+      console.error(`Error ${isEditing ? "updating" : "creating"} post:, error`);
+      alert(error.response?.data?.message || `Failed to ${isEditing ? "update" : "create"} post`);
+    }
+  };
+
+  // Start editing a post
+  const handleEdit = (post) => {
+    setEditPost({
+      id: post.id,
+      title: post.title || "",
+      content: post.content || "",
+      file: null, // Reset file for edit (user can re-upload if needed)
+      tags: post.tags || [],
+    });
+  };
+
+  // Cancel editing
+  const handleCancelEdit = () => {
+    setEditPost(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""; // Reset file input
     }
   };
 
   const handleIconClick = (type) => {
     if (!fileInputRef.current) return;
-    if (type === "image") {
-      fileInputRef.current.setAttribute("accept", "image/*");
-    } else if (type === "video") {
-      fileInputRef.current.setAttribute("accept", "video/*");
-    }
+    fileInputRef.current.setAttribute("accept", type === "video" ? "video/" : "image/");
     fileInputRef.current.click();
   };
 
   return (
-    <div className="max-w-3xl mx-auto my-10">
-      {/* Sticky Create Post Form */}
-      <div className="sticky top-0 z-10 bg-white shadow-lg p-4 mb-6 rounded-lg">
-        <form onSubmit={handleSubmit}>
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl font-bold">Create Post</h1>
-            <Button type="submit">Post</Button>
+    <div className="max-w-3xl mx-auto my-5">
+      <div className="w-full shadow-lg p-4 mb-6 rounded-lg">
+        <h1 className="text-2xl font-bold mb-4">
+          {editPost ? "Edit Post" : clicked === "video" ? "Upload Video" : "Upload Post"}
+        </h1>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <Input
+            placeholder="Post title"
+            value={editPost ? editPost.title : newPost.title}
+            onChange={(e) => handleInputChange(e, "title")}
+            required
+          />
+          <Textarea
+            rows={5}
+            placeholder="Write your post content here..."
+            value={editPost ? editPost.content : newPost.content}
+            onChange={(e) => handleInputChange(e, "content")}
+            required={!editPost?.file && !newPost.file} // Content required only if no file
+          />
+          <input
+            ref={fileInputRef}
+            type="file"
+            className="hidden"
+            onChange={handleFileChange}
+            accept={clicked === "video" ? "video/" : "image/"}
+          />
+          <div className="flex items-center justify-end gap-2">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => handleIconClick(clicked === "video" ? "video" : "image")}
+              title={clicked === "video" ? "Upload Video" : "Upload Image"}
+            >
+              {clicked === "video" ? <VideoIcon size={24} /> : <ImageIcon size={24} />}
+            </Button>
           </div>
-          <div className="flex gap-4">
-            {/* Textarea */}
-            <Textarea
-              rows={5}
-              placeholder="Write your post content here..."
-              value={newPost.content}
-              onChange={handleContentChange}
-              className="flex-1"
-            />
-
-            {/* Removed tags input since we're extracting from content */}
-
-            <div className="flex gap-4">
-              {/* File Upload Buttons */}
-              <div className="flex flex-col gap-2 items-center justify-start pt-2">
-                <Button
-                  variant="ghost"
-                  type="button"
-                  onClick={() => handleIconClick("image")}
-                  title="Upload Image"
-                >
-                  <ImageIcon size={24} />
-                </Button>
-                <Button
-                  variant="ghost"
-                  type="button"
-                  onClick={() => handleIconClick("video")}
-                  title="Upload Video"
-                >
-                  <VideoIcon size={24} />
-                </Button>
-              </div>
-            </div>
-
-            {/* Hidden File Input */}
-            <input
-              ref={fileInputRef}
-              type="file"
-              className="hidden"
-              onChange={handleFileChange}
-            />
+          <div className="flex gap-2">
+            <Button type="submit">{editPost ? "Update Post" : "Post"}</Button>
+            {editPost && (
+              <Button type="button" variant="outline" onClick={handleCancelEdit}>
+                Cancel
+              </Button>
+            )}
           </div>
         </form>
       </div>
 
-      {/* Post Feed */}
       <div className="py-4 flex flex-col items-center px-2">
-        {posts.map((post) => (
-          <PostFeed key={post.id} post={post} />
+        {(clicked === "video" ? videoPosts : normalPosts).map((post) => (
+          <PostFeed key={post._id} post={post} onEdit={handleEdit} />
         ))}
       </div>
     </div>
   );
 }
 
-export default FeedPage;
+export default FeedPage;

@@ -54,7 +54,7 @@ wss.on("connection", (ws) => {
  * Handle user login and register WebSocket
  */
 function handleLogin(ws, username) {
-  if (!username) return;
+  if (!username) return;r
   console.log(`✅ User logged in: ${username}`);
   users.set(username, ws);
   ws.username = username;

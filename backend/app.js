@@ -7,9 +7,11 @@ import communityRoutes from "./routes/community.route.js";
 import notifiRoutes from "./routes/notification.route.js";
 import paymentRoutes from "./routes/payment.route.js";
 import postRoutes from "./routes/post.route.js";
+import postFeedRoutes from "./routes/postFeed.route.js";
 import reportRoutes from "./routes/report.route.js";
 import subscriptionRouter from "./routes/subscription.route.js";
 import userRoutes from "./routes/user.route.js";
+import companyRoutes from "./routes/company.route.js";
 
 const app = express();
 
@@ -32,10 +34,12 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/post", postRoutes);
+app.use("/api/postFeed", postFeedRoutes);
 app.use("/api/community", communityRoutes);
 app.use("/api/report", reportRoutes);
 app.use("/api/notifications", notifiRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/company", companyRoutes);
 
 app.use("/api/payment", paymentRoutes);
 app.use("/api/payment", subscriptionRouter);
