@@ -33,6 +33,7 @@ import {
   createTheme, // Import createTheme
 } from "@mui/material";
 
+// import SearchComponent from "../Search/Searching"
 function Home() {
   const navigate = useNavigate();
 
@@ -45,6 +46,7 @@ function Home() {
   return (
     <>
       <HeaderPublic />
+     
       <GeolocationComponent />
       <LandingPage />
       <TipsCards />

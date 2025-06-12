@@ -17,6 +17,7 @@ import {
 
 import { Grid } from "@mui/material";
 import JobPosts from "../../JobPosts/JobPosts";
+import BlogPosts from "../../JobPosts/BlogsPosts";
 
 const DoctorProfile = () => {
   const navigate = useNavigate();
@@ -61,6 +62,7 @@ const DoctorProfile = () => {
             <DoctorProfileUpdate />
           </Grid>
           <Grid item md={8}>
+            <BlogPosts/>
             {/* <AppointmentToDoctors /> */}
             <JobPosts/>
 

@@ -7,7 +7,8 @@ import { Grid,Container } from "@mui/material";
 import AnyUserProfileUpdate from "./updateAnonyUser";
 import FreeTimeSlots from "../../Appointment/Free_Slot_Time";
 import AppointmentPlacementsList from "../../Appointment/appoint_placed";
-
+import Community from "../../community/Community";
+import UserPostsBlogs from "../../community/UserPostBlogs";
 
 const AnnoyUser = () => {
   const navigate = useNavigate();
@@ -52,14 +53,14 @@ const AnnoyUser = () => {
           <AnyUserProfileUpdate />
         </Grid>
         <Grid item md={8}>
-          <FreeTimeSlots />
+ <UserPostsBlogs/>
           <br />
-          <AppointmentPlacementsList />
+         
         </Grid>
       </Grid>
 
       <Grid item md={12}>
-       
+     <UserPostsBlogs/>
       </Grid>
       <br />
       <br />

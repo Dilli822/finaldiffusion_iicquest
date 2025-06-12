@@ -21,6 +21,8 @@ import PostReels from "./components/MakeReels/PostReels";
 import HistogramForTalent from "./components/Histogram/TalentRegion";
 import ChatRoom from "./components/LiveChat/liveChatRoom";
 import AiNews from "./components/News/AiNews";
+import BlogPosts from "./components/JobPosts/BlogsPosts";
+import SearchComponent from "./components/Search/Searching";
 
 export default function MainRouter() {
   return (
@@ -47,6 +49,9 @@ export default function MainRouter() {
       <Route path="/historgramTalent" element={<HistogramForTalent />} />
       <Route path="/livechat" element={<ChatRoom />} />
       <Route path="/ainews" element={<AiNews />} />
+      <Route path="/blogPostsTS" element={<BlogPosts />} />
+      <Route path="/searching" element={<SearchComponent />} />
     </Routes>
+
   );
 }

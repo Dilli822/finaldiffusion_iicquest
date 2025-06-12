@@ -146,9 +146,9 @@ const AnyUserProfileUpdate = () => {
           borderRadius: "8px",
         }}
       >
-        <Typography variant="h5">Anonymous Profile</Typography>
-        <Typography variant="p">
-        #Anonymous User ID: {profileData.annonyuser_id} | #User ID: {profileData.user}
+        <Typography variant="h5">User Profile</Typography>
+        <Typography variant="h6">
+         User ID: {profileData.annonyuser_id} {/*  |  #User ID: {profileData.user} */}
         </Typography>
         <hr />
 
