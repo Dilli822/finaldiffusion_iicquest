@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Broadcaster</title>
+  <style>
+    body { 
+      font-family: Arial; 
+      padding: 20px; 
+      display: flex;
+      gap: 20px;
+    }
+    .video-section {
+      flex: 2;
+    }
+    .chat-section {
+      flex: 1;
+      border: 1px solid #ccc;
+      padding: 15px;
+      max-width: 400px;
+      height: 600px;
+      display: flex;
+      flex-direction: column;
+    }
+    #viewerList { 
+      margin-top: 10px; 
+      border: 1px solid #aaa; 
+      padding: 10px; 
+      width: 300px; 
+    }
+    #controls { 
+      margin-top: 20px; 
+    }
+    #chatMessages {
+      flex: 1;
+      border: 1px solid #ddd;
+      padding: 10px;
+      overflow-y: auto;
+      background-color: #f9f9f9;
+      margin-bottom: 10px;
+      max-height: 400px;
+    }
+    .message {
+      margin: 5px 0;
+      padding: 5px;
+      border-radius: 5px;
+    }
+    .message.broadcaster {
+      background-color: #e3f2fd;
+      text-align: right;
+    }
+    .message.viewer {
+      background-color: #f3e5f5;
+    }
+    .message-author {
+      font-weight: bold;
+      font-size: 0.9em;
+    }
+    .message-content {
+      margin-top: 3px;
+    }
+    .message-time {
+      font-size: 0.8em;
+      color: #666;
+      margin-top: 2px;
+    }
+    #chatInput {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      margin-bottom: 5px;
+    }
+    #sendButton {
+      width: 100%;
+      padding: 8px;
+      background-color: #2196F3;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    #sendButton:hover {
+      background-color: #1976D2;
+    }
+    .chat-header {
+      text-align: center;
+      margin-bottom: 10px;
+      font-weight: bold;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="video-section">
+    <h1>Broadcaster</h1>
+
+    <video id="localVideo" autoplay muted playsinline style="width: 600px; border: 1px solid black;"></video>
+
+    <div id="controls">
+      <button onclick="stopStreaming()">Stop Streaming</button>
+      <p><strong>Share this stream:</strong> <span id="streamUrl"></span></p>
+    </div>
+
+    <h3>Connected Viewers (<span id="viewerCount">0</span>):</h3>
+    <div id="viewerList"></div>
+  </div>
+
+  <div class="chat-section">
+    <div class="chat-header">Live Chat</div>
+    <div id="chatMessages"></div>
+    <input type="text" id="chatInput" placeholder="Type your message..." maxlength="500">
+    <button id="sendButton">Send Message</button>
+  </div>
+
+  <script>
+    const broadcasterId = prompt("Enter broadcaster ID:", "dilli");
+    const ws = new WebSocket('ws://localhost:9080');
+
+    let localStream;
+    const peerConnections = {}; // viewerId => RTCPeerConnection
+    const viewers = new Map();  // viewerId => name or object
+
+    ws.onopen = () => {
+      ws.send(JSON.stringify({ type: 'broadcaster', broadcasterId }));
+      startLocalStream();
+
+      document.getElementById('streamUrl').textContent =
+        `Enter Broadcaster ID: ${broadcasterId}`;
+    };
+
+    ws.onmessage = async (event) => {
+      const data = JSON.parse(event.data);
+
+      if (data.type === 'viewer') {
+        const { viewerId, viewerName = `Viewer-${viewerId.substring(0, 4)}` } = data;
+        viewers.set(viewerId, viewerName);
+        updateViewerList();
+        await handleViewer(viewerId);
+        
+        // Send welcome message
+        addChatMessage('System', `${viewerName} joined the stream`, 'system');
+      }
+      else if (data.type === 'answer') {
+        const pc = peerConnections[data.viewerId];
+        if (pc) await pc.setRemoteDescription(new RTCSessionDescription(data.answer));
+      }
+      else if (data.type === 'ice-candidate') {
+        const pc = peerConnections[data.viewerId];
+        if (pc && data.candidate) await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+      }
+      else if (data.type === 'viewer-left') {
+        const viewerName = viewers.get(data.viewerId) || `Viewer-${data.viewerId.substring(0, 4)}`;
+        viewers.delete(data.viewerId);
+        updateViewerList();
+        if (peerConnections[data.viewerId]) {
+          peerConnections[data.viewerId].close();
+          delete peerConnections[data.viewerId];
+        }
+        addChatMessage('System', `${viewerName} left the stream`, 'system');
+      }
+      else if (data.type === 'chat-message') {
+        const viewerName = viewers.get(data.viewerId) || `Viewer-${data.viewerId.substring(0, 4)}`;
+        addChatMessage(viewerName, data.message, 'viewer');
+      }
+    };
+
+    async function startLocalStream() {
+      try {
+        localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        document.getElementById('localVideo').srcObject = localStream;
+      } catch (err) {
+        alert('Could not get local media: ' + err.message);
+      }
+    }
+
+    async function handleViewer(viewerId) {
+      const pc = new RTCPeerConnection({
+        iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+      });
+      peerConnections[viewerId] = pc;
+
+      localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+
+      pc.onicecandidate = (event) => {
+        if (event.candidate) {
+          ws.send(JSON.stringify({
+            type: 'ice-candidate',
+            to: 'viewer',
+            viewerId,
+            candidate: event.candidate
+          }));
+        }
+      };
+
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+
+      ws.send(JSON.stringify({
+        type: 'offer',
+        viewerId,
+        broadcasterId,
+        offer
+      }));
+    }
+
+    function updateViewerList() {
+      const listDiv = document.getElementById('viewerList');
+      listDiv.innerHTML = '';
+      viewers.forEach((name, id) => {
+        const div = document.createElement('div');
+        div.textContent = `👤 ${name} (ID: ${id})`;
+        listDiv.appendChild(div);
+      });
+      document.getElementById('viewerCount').textContent = viewers.size;
+    }
+
+    function addChatMessage(author, message, type = 'viewer') {
+      const chatMessages = document.getElementById('chatMessages');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${type}`;
+      
+      const timestamp = new Date().toLocaleTimeString();
+      
+      messageDiv.innerHTML = `
+        <div class="message-author">${author}</div>
+        <div class="message-content">${escapeHtml(message)}</div>
+        <div class="message-time">${timestamp}</div>
+      `;
+      
+      chatMessages.appendChild(messageDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function sendChatMessage() {
+      const input = document.getElementById('chatInput');
+      const message = input.value.trim();
+      
+      if (message && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          type: 'chat-message',
+          broadcasterId,
+          message,
+          from: 'broadcaster'
+        }));
+        
+        addChatMessage('You (Broadcaster)', message, 'broadcaster');
+        input.value = '';
+      }
+    }
+
+    // Chat event listeners
+    document.getElementById('sendButton').onclick = sendChatMessage;
+    document.getElementById('chatInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        sendChatMessage();
+      }
+    });
+
+    function stopStreaming() {
+      if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
+      }
+      Object.values(peerConnections).forEach(pc => pc.close());
+      ws.close();
+      alert('Streaming stopped');
+      location.reload();
+    }
+  </script>
+</body>
+</html>

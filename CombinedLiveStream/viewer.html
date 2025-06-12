@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Viewer</title>
+  <style>
+    body { 
+      font-family: Arial; 
+      padding: 20px; 
+      display: flex;
+      gap: 20px;
+    }
+    .video-section {
+      flex: 2;
+    }
+    .chat-section {
+      flex: 1;
+      border: 1px solid #ccc;
+      padding: 15px;
+      max-width: 400px;
+      height: 600px;
+      display: flex;
+      flex-direction: column;
+    }
+    #chatMessages {
+      flex: 1;
+      border: 1px solid #ddd;
+      padding: 10px;
+      overflow-y: auto;
+      background-color: #f9f9f9;
+      margin-bottom: 10px;
+      max-height: 400px;
+    }
+    .message {
+      margin: 5px 0;
+      padding: 5px;
+      border-radius: 5px;
+    }
+    .message.broadcaster {
+      background-color: #e3f2fd;
+    }
+    .message.viewer {
+      background-color: #f3e5f5;
+      text-align: right;
+    }
+    .message.system {
+      background-color: #fff3e0;
+      text-align: center;
+      font-style: italic;
+    }
+    .message.other-viewer {
+      background-color: #e8f5e8;
+    }
+    .message-author {
+      font-weight: bold;
+      font-size: 0.9em;
+    }
+    .message-content {
+      margin-top: 3px;
+    }
+    .message-time {
+      font-size: 0.8em;
+      color: #666;
+      margin-top: 2px;
+    }
+    #chatInput {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      margin-bottom: 5px;
+      box-sizing: border-box;
+    }
+    #sendButton {
+      width: 100%;
+      padding: 8px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    #sendButton:hover {
+      background-color: #45a049;
+    }
+    #sendButton:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+    .chat-header {
+      text-align: center;
+      margin-bottom: 10px;
+      font-weight: bold;
+      color: #333;
+    }
+    .connection-status {
+      text-align: center;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+    }
+    .status-connected {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .status-disconnected {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+  </style>
+</head>
+<body>
+  <div class="video-section">
+    <h1>Viewer</h1>
+    <input id="broadcasterIdInput" placeholder="Enter Broadcaster ID" />
+    <button id="connectBtn">Connect</button>
+    <button id="leaveBtn" disabled>Leave</button>
+    <br><br>
+    <video id="remoteVideo" autoplay playsinline style="width: 600px; border: 1px solid black;"></video>
+    <div id="connectionStatus" class="connection-status status-disconnected">Not Connected</div>
+  </div>
+
+  <div class="chat-section">
+    <div class="chat-header">Live Chat</div>
+    <div id="chatMessages"></div>
+    <input type="text" id="chatInput" placeholder="Type your message..." maxlength="500" disabled>
+    <button id="sendButton" disabled>Send Message</button>
+  </div>
+
+  <script>
+    let ws;
+    let pc;
+    let viewerId;
+    let broadcasterId;
+    let connected = false;
+
+    document.getElementById('connectBtn').onclick = () => {
+      broadcasterId = document.getElementById('broadcasterIdInput').value.trim();
+      if (!broadcasterId) {
+        alert('Please enter broadcaster ID');
+        return;
+      }
+      start();
+    };
+
+    document.getElementById('leaveBtn').onclick = () => {
+      leaveStream();
+    };
+
+    async function start() {
+      ws = new WebSocket('ws://localhost:9080');
+      updateConnectionStatus('Connecting...');
+
+      ws.onopen = () => {
+        ws.send(JSON.stringify({ type: 'viewer', broadcasterId }));
+      };
+
+      ws.onmessage = async (event) => {
+        const data = JSON.parse(event.data);
+
+        if (data.type === 'viewer-id') {
+          viewerId = data.viewerId;
+          createPeerConnection();
+          document.getElementById('leaveBtn').disabled = false;
+          document.getElementById('chatInput').disabled = false;
+          document.getElementById('sendButton').disabled = false;
+          connected = true;
+          updateConnectionStatus('Connected');
+          addChatMessage('System', 'Connected to stream. Welcome!', 'system');
+        }
+        else if (data.type === 'offer') {
+          await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
+          const answer = await pc.createAnswer();
+          await pc.setLocalDescription(answer);
+
+          ws.send(JSON.stringify({
+            type: 'answer',
+            viewerId,
+            broadcasterId,
+            answer
+          }));
+        }
+        else if (data.type === 'ice-candidate') {
+          if (data.candidate) {
+            await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+          }
+        }
+        else if (data.type === 'broadcaster-disconnected') {
+          alert('Broadcaster has gone offline.');
+          leaveStream();
+        }
+        else if (data.type === 'error') {
+          alert(data.message || 'An error occurred');
+          leaveStream();
+        }
+        else if (data.type === 'chat-message') {
+          if (data.from === 'broadcaster') {
+            addChatMessage('Broadcaster', data.message, 'broadcaster');
+          } else if (data.viewerId !== viewerId) {
+            // Message from another viewer
+            addChatMessage(`Viewer-${data.viewerId.substring(0, 4)}`, data.message, 'other-viewer');
+          }
+        }
+      };
+
+      ws.onerror = () => {
+        alert('WebSocket connection error');
+        leaveStream();
+      };
+
+      ws.onclose = () => {
+        if (connected) {
+          alert('Disconnected from server');
+        }
+        leaveStream();
+      };
+    }
+
+    function createPeerConnection() {
+      pc = new RTCPeerConnection({
+        iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+      });
+
+      pc.ontrack = (event) => {
+        const remoteVideo = document.getElementById('remoteVideo');
+        if (remoteVideo.srcObject !== event.streams[0]) {
+          remoteVideo.srcObject = event.streams[0];
+        }
+      };
+
+      pc.onicecandidate = (event) => {
+        if (event.candidate) {
+          ws.send(JSON.stringify({
+            type: 'ice-candidate',
+            to: 'broadcaster',
+            broadcasterId,
+            candidate: event.candidate
+          }));
+        }
+      };
+
+      pc.onconnectionstatechange = () => {
+        if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
+          alert('Connection to broadcaster lost.');
+          leaveStream();
+        }
+      };
+    }
+
+    function updateConnectionStatus(status) {
+      const statusDiv = document.getElementById('connectionStatus');
+      statusDiv.textContent = status;
+      
+      if (status === 'Connected') {
+        statusDiv.className = 'connection-status status-connected';
+      } else {
+        statusDiv.className = 'connection-status status-disconnected';
+      }
+    }
+
+    function addChatMessage(author, message, type = 'viewer') {
+      const chatMessages = document.getElementById('chatMessages');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${type}`;
+      
+      const timestamp = new Date().toLocaleTimeString();
+      
+      messageDiv.innerHTML = `
+        <div class="message-author">${author}</div>
+        <div class="message-content">${escapeHtml(message)}</div>
+        <div class="message-time">${timestamp}</div>
+      `;
+      
+      chatMessages.appendChild(messageDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function sendChatMessage() {
+      const input = document.getElementById('chatInput');
+      const message = input.value.trim();
+      
+      if (message && ws && ws.readyState === WebSocket.OPEN && connected) {
+        ws.send(JSON.stringify({
+          type: 'chat-message',
+          viewerId,
+          broadcasterId,
+          message,
+          from: 'viewer'
+        }));
+        
+        addChatMessage('You', message, 'viewer');
+        input.value = '';
+      }
+    }
+
+    // Chat event listeners
+    document.getElementById('sendButton').onclick = sendChatMessage;
+    document.getElementById('chatInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        sendChatMessage();
+      }
+    });
+
+    function leaveStream() {
+      connected = false;
+      updateConnectionStatus('Disconnected');
+      
+      if (pc) {
+        pc.close();
+        pc = null;
+      }
+
+      const remoteVideo = document.getElementById('remoteVideo');
+      if (remoteVideo.srcObject) {
+        remoteVideo.srcObject.getTracks().forEach(track => track.stop());
+        remoteVideo.srcObject = null;
+      }
+
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: 'leave', viewerId, broadcasterId }));
+        ws.close();
+      }
+
+      document.getElementById('leaveBtn').disabled = true;
+      document.getElementById('chatInput').disabled = true;
+      document.getElementById('sendButton').disabled = true;
+      document.getElementById('chatInput').value = '';
+      document.getElementById('chatMessages').innerHTML = '';
+    }
+  </script>
+</body>
+</html>
