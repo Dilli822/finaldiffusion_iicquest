@@ -839,12 +839,7 @@ function UserPostsBlogs() {
           </Card>
 
           {/* Posts List */}
-          {filteredPosts
-            .sort(
-              (a, b) =>
-                new Date(b.post.created_at) - new Date(a.post.created_at)
-            )
-            .map(renderPost)}
+         
         </Box>
       </Container>
 

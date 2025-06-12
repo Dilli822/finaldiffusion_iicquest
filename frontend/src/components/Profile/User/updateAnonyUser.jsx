@@ -8,6 +8,7 @@ import {
   CircularProgress,
   Modal,
 } from "@mui/material";
+import { Input } from "@material-ui/core";
 
 const AnyUserProfileUpdate = () => {
   const [profileData, setProfileData] = useState({});
@@ -15,23 +16,29 @@ const AnyUserProfileUpdate = () => {
   const [bio, setBio] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [message, setMessage] = useState("");
+  const [externalURL, setExternalURL] = useState("");
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [initialProfileData, setInitialProfileData] = useState({});
   const [open, setOpen] = useState(false);
   const [userIds, setUserIds] = useState([]);
+  const [resumeFile, setResumeFile] = useState(null);
 
-  const userId = localStorage.getItem("userId")
+  const userId = localStorage.getItem("userId");
   const Aaaid = localStorage.getItem("Aid");
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:8000/sushtiti/account/users/self", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-          },
-        });
+        const response = await fetch(
+          "http://localhost:8000/sushtiti/account/users/self",
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            },
+          }
+        );
 
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -44,6 +51,9 @@ const AnyUserProfileUpdate = () => {
         setInitialProfileData(data[0]);
         setBio(data[0].bio);
         setPhoneNumber(data[0].phone_number);
+        setExternalURL(data[0].externalURL);
+
+
         localStorage.setItem("Aid", data[0].annonyuser_id); // Ensure Aid is set
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -61,6 +71,14 @@ const AnyUserProfileUpdate = () => {
   const handleClose = () => {
     setOpen(false);
   };
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file && file.type === "application/pdf") {
+      setResumeFile(file);
+    } else {
+      alert("Please select a valid PDF file.");
+    }
+  };
 
   const handleLogoutConfirm = () => {
     localStorage.clear();
@@ -74,9 +92,13 @@ const AnyUserProfileUpdate = () => {
       if (imageFile) {
         formData.append("image", imageFile);
       }
+      if (resumeFile) {
+        formData.append("resume", resumeFile);
+      }
       formData.append("address", profileData.address);
       formData.append("phone_number", profileData.phone_number);
       formData.append("bio", profileData.bio);
+      formData.append("externalURL", profileData.externalURL || "");
 
       if (!Aaaid) {
         throw new Error("Anonymous user ID is missing.");
@@ -148,7 +170,8 @@ const AnyUserProfileUpdate = () => {
       >
         <Typography variant="h5">User Profile</Typography>
         <Typography variant="h6">
-         User ID: {profileData.annonyuser_id} {/*  |  #User ID: {profileData.user} */}
+          User ID: {profileData.annonyuser_id}{" "}
+          {/*  |  #User ID: {profileData.user} */}
         </Typography>
         <hr />
 
@@ -198,12 +221,12 @@ const AnyUserProfileUpdate = () => {
           </Box>
 
           <span>
-            <i>  Click on the Image to Change the picture. </i>
+            <i> Click on the Image to Change the picture. </i>
           </span>
           <hr />
           <br />
           <Typography variant="body1" style={{ marginBottom: "16px" }}>
-          <b> Nick Name:{" "} </b>
+            <b> Nick Name: </b>
             {profileEditMode ? (
               <TextField
                 name="address"
@@ -212,12 +235,27 @@ const AnyUserProfileUpdate = () => {
                 style={{ width: "100%" }}
               />
             ) : (
-               <>{profileData.username }  </>
+              <>{profileData.username} </>
             )}
           </Typography>
 
           <Typography variant="body1" style={{ marginBottom: "16px" }}>
-          <b> Address:{" "} </b>
+            <b> Profile Tier: </b>
+          {profileEditMode ? (
+  <TextField
+    name="tier"
+    value={profileData.tier || "Free Tier"}
+    onChange={handleInputChange}
+    style={{ width: "100%" }}
+  />
+) : (
+  <>{profileData.tier || "Free Tier"}</>
+)}
+
+          </Typography>
+
+          <Typography variant="body1" style={{ marginBottom: "16px" }}>
+            <b> Address: </b>
             {profileEditMode ? (
               <TextField
                 name="address"
@@ -226,12 +264,12 @@ const AnyUserProfileUpdate = () => {
                 style={{ width: "100%" }}
               />
             ) : (
-               <>{profileData.address }  </>
+              <>{profileData.address} </>
             )}
           </Typography>
 
           <Typography variant="body1" style={{ marginBottom: "16px" }}>
-          <b>    Phone Number:{" "}</b>
+            <b> Phone Number: </b>
             {profileEditMode ? (
               <TextField
                 name="phone_number"
@@ -240,7 +278,7 @@ const AnyUserProfileUpdate = () => {
                 style={{ width: "100%" }}
               />
             ) : (
-            <> {profileData.phone_number}</>
+              <> {profileData.phone_number}</>
             )}
           </Typography>
 
@@ -248,7 +286,7 @@ const AnyUserProfileUpdate = () => {
             variant="body1"
             style={{ marginBottom: "16px", textAlign: "left" }}
           >
-           <b>Bio & Past Report Records:{" "} </b> 
+            <b>Bio & Past Report Records: </b>
             {profileEditMode ? (
               <TextField
                 name="bio"
@@ -260,6 +298,75 @@ const AnyUserProfileUpdate = () => {
               />
             ) : (
               profileData.bio
+            )}
+          </Typography>
+
+          <Typography
+            variant="body1"
+            style={{ marginBottom: "16px", textAlign: "left" }}
+          >
+            <b>Resume: </b>
+            {profileEditMode ? (
+              <>
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file && file.type === "application/pdf") {
+                      setResumeFile(file);
+                    } else {
+                      alert("Please select a valid PDF file.");
+                    }
+                  }}
+                />
+                {resumeFile && (
+                  <Typography variant="caption" display="block">
+                    Selected: {resumeFile.name}
+                  </Typography>
+                )}
+              </>
+            ) : resumeFile ? (
+              <a
+                href={URL.createObjectURL(resumeFile)}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {resumeFile.name}
+              </a>
+            ) : profileData.resume ? (
+              <a
+                href={profileData.resume}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                View Resume
+              </a>
+            ) : (
+              <>No resume uploaded.</>
+            )}
+          </Typography>
+
+          <Typography variant="body1" style={{ marginBottom: "16px" }}>
+            <b>website: </b>
+            {profileEditMode ? (
+              <TextField
+                name="externalURL"
+                value={profileData.externalURL || ""}
+                onChange={handleInputChange}
+                style={{ width: "100%" }}
+                placeholder="https://yourwebsite.com"
+              />
+            ) : profileData.externalURL ? (
+              <a
+                href={profileData.externalURL}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {profileData.externalURL}
+              </a>
+            ) : (
+              <>Not provided</>
             )}
           </Typography>
 
@@ -301,8 +408,8 @@ const AnyUserProfileUpdate = () => {
                   Edit
                 </Button>
                 <Button
-               variant="outlined"
-              color="error"
+                  variant="outlined"
+                  color="error"
                   onClick={handleLogout}
                   style={{ marginLeft: "8px" }}
                 >

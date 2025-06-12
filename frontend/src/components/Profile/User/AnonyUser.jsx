@@ -53,15 +53,12 @@ const AnnoyUser = () => {
           <AnyUserProfileUpdate />
         </Grid>
         <Grid item md={8}>
- <UserPostsBlogs/>
+          <UserPostsBlogs/>
           <br />
-         
         </Grid>
       </Grid>
 
-      <Grid item md={12}>
-     <UserPostsBlogs/>
-      </Grid>
+
       <br />
       <br />
       </Container>

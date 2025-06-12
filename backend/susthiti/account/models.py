@@ -110,6 +110,8 @@ class DoctorProfile(models.Model):
     image = models.ImageField(upload_to='user/profile_images/', null=True, blank=True)
     address = models.CharField(max_length=100, blank=True)
     phone_number = models.CharField(max_length=20, blank=True, null=True)
+    
+    tier = models.CharField(max_length=60, blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if not self.username:
@@ -134,6 +136,8 @@ class AnnonymousUser(models.Model):
     status = models.CharField(max_length=125, blank=True)
     resume = models.FileField(upload_to='user/resumes/', null=True, blank=True)
     externalURL = models.TextField(max_length=50, blank=True)
+    
+    tier = models.CharField(max_length=60, blank=True, null=True)
 
     def save(self, *args, **kwargs):
      if not self.username:

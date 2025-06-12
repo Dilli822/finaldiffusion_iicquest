@@ -51,6 +51,7 @@ function Home() {
       <LandingPage />
       <TipsCards />
       <AppFooter />
+      
     </>
   );
 }

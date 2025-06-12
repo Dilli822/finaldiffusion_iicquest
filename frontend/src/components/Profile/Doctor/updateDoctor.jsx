@@ -23,6 +23,8 @@ const DoctorProfileUpdate = () => {
     email: "",
     address: "",
     phone_number: "",
+    partnership_number: "",
+    partner_names: [],
     bio: "",
   });
   const [profileImage, setProfileImage] = useState(null); // State for the new profile image
@@ -49,6 +51,8 @@ const DoctorProfileUpdate = () => {
           email: data[0].email,
           address: data[0].address,
           phone_number: data[0].phone_number,
+          partnership_number: data[0].partnership_number,
+          partner_names: data[0].partner_names,
           bio: data[0].bio,
         });
       } else {
@@ -78,9 +82,13 @@ const DoctorProfileUpdate = () => {
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
+
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]:
+        name === "partner_names"
+          ? value.split(",").map((item) => item.trim())
+          : value,
     }));
   };
 
@@ -99,6 +107,10 @@ const DoctorProfileUpdate = () => {
     formDataToSend.append("email", formData.email);
     formDataToSend.append("address", formData.address);
     formDataToSend.append("phone_number", formData.phone_number);
+    formDataToSend.append("partnership_number", formData.partnership_number);
+    formData.partner_names.forEach((name) =>
+      formDataToSend.append("partner_names", name)
+    );
     formDataToSend.append("bio", formData.bio);
     if (profileImage) {
       formDataToSend.append("image", profileImage); // Append the image file
@@ -145,9 +157,10 @@ const DoctorProfileUpdate = () => {
           borderRadius: "8px",
         }}
       >
-        <Typography variant="h5">Doctor's Profile</Typography>
+        <Typography variant="h5">Talent's Profile</Typography>
         <Typography variant="p">
-          #Doctor ID: {profileData.doctor_id} | #User ID: {profileData.user}
+          #Talent Seeker ID: {profileData.doctor_id} 
+          {/* | #User ID: {profileData.user} */}
         </Typography>
 
         <Box
@@ -248,6 +261,40 @@ const DoctorProfileUpdate = () => {
                 },
               }}
             />
+            <TextField
+              label="Partnership No."
+              name="partnership_number"
+              value={formData.partnership_number}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+              inputProps={{
+                readOnly: readOnly,
+              }}
+              InputProps={{
+                style: {
+                  color: readOnly ? "#000" : "darkgreen",
+                },
+              }}
+            />
+            <TextField
+              label="Partnership names"
+              name="partner_names"
+              value={formData.partner_names}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+              inputProps={{
+                readOnly: readOnly,
+              }}
+              InputProps={{
+                style: {
+                  color: readOnly ? "#000" : "darkgreen",
+                },
+              }}
+                 multiline
+            />
+
             <TextField
               label="Bio"
               name="bio"

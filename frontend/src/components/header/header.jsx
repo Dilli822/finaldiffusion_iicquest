@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Close as CloseIcon } from "@material-ui/icons";
 import Notification from "../Notifications/Notifications";
-import AppLogo from "../assets/img/Logo.png"
+import AppLogo from "../assets/img/Logo.png";
 import {
   AppBar,
   Button,
@@ -185,7 +185,7 @@ const Header = () => {
         <Container maxWidth={"lg"}>
           <Grid
             container
-            style={{ display: "flex", alignItems: "center" }}
+            style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}
             id="mobileNav"
           >
             <Grid item xs={6}>
@@ -204,62 +204,10 @@ const Header = () => {
                 container
                 style={{ display: "flex", justifyContent: "flex-end" }}
               >
-                
 
-                <Grid item>
-                  <Link to="/community" underline="none">
-                    <Button
-                      variant="text"
-                      sx={{
-                        color: "#000",
-                        textTransform: "none",
-                        "&:hover": {
-                          backgroundColor: "transparent",
-                        },
-                      }}
-                    >
-                    Make Post 
-                    </Button>
-                  </Link>
-                </Grid>
 
 
                 <Grid item>
-                  <Link to="http://127.0.0.1:5500/VideoCall/rtc.html" underline="none">
-                    <Button
-                      variant="text"
-                      sx={{
-                        color: "#000",
-                        textTransform: "none",
-                        "&:hover": {
-                          backgroundColor: "transparent",
-                        },
-                      }}
-                    >
-                  Online Video Chat/Stay Online 
-                    </Button>
-                  </Link>
-                </Grid>
-
-                 <Grid item>
-                  <Link to="/historgramtalent" underline="none">
-                    <Button
-                      variant="text"
-                      sx={{
-                        color: "#000",
-                        textTransform: "none",
-                        "&:hover": {
-                          backgroundColor: "transparent",
-                        },
-                      }}
-                    >
-                  Talent Seeker and Talent Regions
-                    </Button>
-                  </Link>
-                </Grid>
-
-
-                 <Grid item>
                   <Link to="/ainews" underline="none">
                     <Button
                       variant="text"
@@ -271,13 +219,16 @@ const Header = () => {
                         },
                       }}
                     >
-                  AiNews
+                      Check Talent News
                     </Button>
                   </Link>
                 </Grid>
 
- <Grid item>
-                  <Link to="http://127.0.0.1:5500/VideoCall/rtc.html" underline="none">
+                <Grid item>
+                  <Link
+                    to="http://127.0.0.1:5500/LiveStreamBroadcast/broadcaster.html"
+                    underline="none"
+                  >
                     <Button
                       variant="text"
                       sx={{
@@ -288,63 +239,10 @@ const Header = () => {
                         },
                       }}
                     >
-                  Online Video Chat/Stay Online 
+                      GO LIVE
                     </Button>
                   </Link>
                 </Grid>
-    
-
-     <Grid item>
-                  <Link to="http://127.0.0.1:5500/LiveStreamBroadcast/broadcaster.html" underline="none">
-                    <Button
-                      variant="text"
-                      sx={{
-                        color: "#000",
-                        textTransform: "none",
-                        "&:hover": {
-                          backgroundColor: "transparent",
-                        },
-                      }}
-                    >
-                  GO LIVE
-                    </Button>
-                  </Link>
-                </Grid>
-
-
-     <Grid item>
-                  <Link to="http://127.0.0.1:5500/LiveStreamBroadcast/viewer.html" underline="none">
-                    <Button
-                      variant="text"
-                      sx={{
-                        color: "#000",
-                        textTransform: "none",
-                        "&:hover": {
-                          backgroundColor: "transparent",
-                        },
-                      }}
-                    >
-              WATCH LIVE 
-                    </Button>
-                  </Link>
-                </Grid>
-
-                             <Grid item>
-                                  <Link to="/ShareResources" underline="none">
-                                    <Button
-                                      variant="text"
-                                      sx={{
-                                        color: "#000",
-                                        textTransform: "none",
-                                        "&:hover": {
-                                          backgroundColor: "transparent",
-                                        },
-                                      }}
-                                    >
-                                      Share Resources 
-                                    </Button>
-                                  </Link>
-                                </Grid>
 
                 <Grid item>
                   <Link to="/profile/user" underline="none">
@@ -358,7 +256,7 @@ const Header = () => {
                         },
                       }}
                     >
-                    Profile 
+                      Profile
                     </Button>
                   </Link>
                 </Grid>
@@ -369,11 +267,7 @@ const Header = () => {
           {isMobile && (
             <Grid container style={{ display: "flex", alignItems: "center" }}>
               <Grid item xs={6}>
-                <img
-                  src=""
-                  alt=""
-                  style={{ width: "150px" }}
-                />
+                <img src="" alt="" style={{ width: "150px" }} />
               </Grid>
 
               <Grid item xs={6}>

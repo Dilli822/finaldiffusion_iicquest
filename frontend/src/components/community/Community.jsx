@@ -428,7 +428,7 @@ function Community() {
   );
 
   const renderPost = ({ post, comments }) => (
-    <Card key={post.id} sx={{ mb: 4 }}>
+    <Card key={post.id} sx={{ mb: 0 }}>
       <CardContent>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Box display="flex" alignItems="center">
@@ -445,7 +445,11 @@ function Community() {
         />
       )}
 
-      {post.video && (
+      
+  </Typography>
+ <Typography variant="h6">
+  
+       {post.video && (
         <video
           src={post.video}
           controls
@@ -454,7 +458,10 @@ function Community() {
           Your browser does not support the video tag.
         </video>
       )}
-              </Typography>
+            
+             </Typography>
+
+ 
                <Typography variant="h6">{post.title}</Typography>
             </Box>
           </Box>
@@ -568,55 +575,17 @@ function Community() {
     <>
       
       <Container maxWidth="lg">
-        <Box p={4}>
+        <Box p={0}>
           <Typography variant="h4" gutterBottom>
             Post Your Queries | Videos & Reels
           </Typography>
 
           {/* Search Bar */}
           
-
-          {/* New Post Form */}
-          <Card sx={{ mb: 4 }}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Create a New Post
-              </Typography>
-              <TextField
-                fullWidth
-                label="Title"
-                value={newPost.title}
-                onChange={(e) =>
-                  setNewPost({ ...newPost, title: e.target.value })
-                }
-                sx={{ mb: 2 }}
-              />
-              <TextField
-                fullWidth
-                label="Content"
-                multiline
-                rows={4}
-                value={newPost.content}
-                onChange={(e) =>
-                  setNewPost({ ...newPost, content: e.target.value })
-                }
-                sx={{ mb: 2 }}
-              />
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={createPost}
-                disabled={!newPost.title || !newPost.content}
-              >
-                Create Post
-              </Button>
-            </CardContent>
-          </Card>
-
           {/* Posts List */}
-          {/* {filteredPosts
+          {filteredPosts
             .sort((a, b) => new Date(b.post.created_at) - new Date(a.post.created_at))
-            .map(renderPost)} */}
+            .map(renderPost)}
         </Box>
       </Container>
 
@@ -627,7 +596,7 @@ function Community() {
         onClose={handlePostMenuClose}
       >
         <MenuItem onClick={() => handleEditClick(selectedPost)}>
-          <EditIcon fontSize="small" sx={{ mr: 1 }} />
+          <EditIcon fontSize="small" sx={{ mr: 0 }} />
           Edit Post
         </MenuItem>
         <MenuItem

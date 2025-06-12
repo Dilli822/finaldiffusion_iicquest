@@ -19,6 +19,7 @@ import DoctorsList from "../nearby/doctorsNearby";
 import brainImg from "../assets/brainImg.png";
 import EmergencySupport from "../Emergency/Emergency";
 import HopeLight from "../assets/img/mix/IdeaHopeLight.jpg"
+import Community from "../community/Community";
 
 
 export default function LandingPage() {
@@ -33,13 +34,17 @@ export default function LandingPage() {
           style={{ display: "flex", alignItems: "center" }}
         >
           <Grid item md={7}>
-          <Typography gutterBottom sx={{ fontSize: "32px", fontWeight: "" }}>
+          <Typography gutterBottom sx={{ fontSize: "48px", fontWeight: "" }}>
            SkillHive
+          </Typography>
+
+          <Typography gutterBottom sx={{ fontSize: "32px", fontWeight: "" }}>
+            The Hive Where Talents & Skill Thrive
           </Typography>
           </Grid>
 
           <Grid item md={5}>
-         
+            Talented individuals in Nepal often lack exposure, trusted platforms, and access to the right opportunities. There's a gap in connecting talents directly with recruiters, mentors, or project hosts, leading to underused potential.
           </Grid>
         {/* Add content inside the Grid if needed */}
         </Grid>
@@ -71,10 +76,10 @@ export default function LandingPage() {
           
    
         </Grid>
-        <Grid item xs={12} md={5}>
-          <Typography gutterBottom sx={{ fontSize: "32px", fontWeight: "" }}>
-           
-          </Typography>
+        <Grid item xs={12} md={12}>
+        
+           <Community/>
+    
           <Typography variant="body1" gutterBottom>
           
           </Typography>
@@ -87,161 +92,113 @@ export default function LandingPage() {
         <br />
         <br />
        
-        <Box color="white" p={4}>
-          <hr />
-          <br />
-          <br />
-          <Grid container>
-            <Grid item md={11}>
-              <Typography
-                variant="h3"
-                align="left"
-                mb={2}
-                sx={{ color: "#000" }}
-              >
-                Frequently Asked Questions
-              </Typography>
-              <Typography align="left" sx={{ color: "#000", fontSize: "18px" }}>
-                Curiosity is an important part of taking care of ourselves and
-                those we care about.
-              </Typography>
-              {/* "#4FC3F7",  */}
-              <Typography align="left" sx={{ color: "#000", fontSize: "18px" }}>
-                Asking questions and staying informed helps protect and improve
-                our emotional health.
-              </Typography>
-            </Grid>
-          </Grid>
-          <br />
-          <hr />
-          <br />
-          <br />
-          <Box>
-            <Accordion sx={{ backgroundColor: "#fff", color: "black", mb: 2 }}>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel1a-content"
-                id="panel1a-header"
-              >
-                <Typography variant="h6">
-                  What exactly is “mental health”?
-                </Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Typography variant="body1">
-                  Mental health refers to cognitive, behavioral, and emotional
-                  well-being. It is all about how people think, feel, and
-                  behave. Mental health is important at every stage of life,
-                  from childhood and adolescence through adulthood.
-                </Typography>
-              </AccordionDetails>
-            </Accordion>
+ 
+ <Box>
+      <Accordion sx={{ backgroundColor: "#fff", color: "black", mb: 2 }}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1-content"
+          id="panel1-header"
+        >
+          <Typography variant="h6">What is SkillHive?</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography variant="body1">
+            SkillHive is a digital platform that connects talented individuals in Nepal with recruiters, mentors, and job opportunities through live showcases, chat, skill verification, and more.
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
 
-            <Accordion sx={{ backgroundColor: "#fff", color: "black", mb: 2 }}>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel2a-content"
-                id="panel2a-header"
-              >
-                <Typography variant="h6">
-                  What’s the difference between day-to-day emotional struggles
-                  and mental health conditions?
-                </Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Typography variant="body1">
-                  Day-to-day emotional struggles are normal responses to life’s
-                  challenges and stressors. However, mental health conditions
-                  involve persistent symptoms that affect a person’s thoughts,
-                  feelings, or behaviors and cause significant distress or
-                  impairment in daily functioning.
-                </Typography>
-              </AccordionDetails>
-            </Accordion>
+      <Accordion sx={{ backgroundColor: "#fff", color: "black", mb: 2 }}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel2-content"
+          id="panel2-header"
+        >
+          <Typography variant="h6">Who can use SkillHive?</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography variant="body1">
+            Students, freelancers, young professionals, employers, recruiters, mentors, and educational institutions can all benefit from SkillHive.
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
 
-            <Accordion sx={{ backgroundColor: "#fff", color: "black", mb: 2 }}>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel3a-content"
-                id="panel3a-header"
-              >
-                <Typography variant="h6">
-                  What happens when mental health issues aren’t addressed?
-                </Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Typography variant="body1">
-                  Untreated mental health issues can worsen over time and lead
-                  to difficulties in relationships, work, school, and overall
-                  quality of life. It’s important to seek help and support early
-                  to prevent these negative outcomes.
-                </Typography>
-              </AccordionDetails>
-            </Accordion>
+      <Accordion sx={{ backgroundColor: "#fff", color: "black", mb: 2 }}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel3-content"
+          id="panel3-header"
+        >
+          <Typography variant="h6">What problem does SkillHive solve?</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography variant="body1">
+            SkillHive addresses the gap in Nepal where talented people lack exposure, verified opportunities, and trusted connections to mentors and employers.
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
 
-            <Accordion sx={{ backgroundColor: "#fff", color: "black", mb: 2 }}>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel4a-content"
-                id="panel4a-header"
-              >
-                <Typography variant="h6">
-                  What are mental health professionals for?
-                </Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Typography variant="body1">
-                  Mental health professionals, such as psychologists,
-                  psychiatrists, counselors, and therapists, are trained to
-                  assess, diagnose, and treat various mental health conditions.
-                  They provide therapy, medication management, and support to
-                  individuals experiencing mental health challenges.
-                </Typography>
-              </AccordionDetails>
-            </Accordion>
+      <Accordion sx={{ backgroundColor: "#fff", color: "black", mb: 2 }}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel4-content"
+          id="panel4-header"
+        >
+          <Typography variant="h6">What features does SkillHive offer?</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography variant="body1">
+            Features include live streaming of talent showcases, real-time chat, job and event postings, skill tests, verified profiles, and mentorship.
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
 
-            <Accordion sx={{ backgroundColor: "#fff", color: "black", mb: 2 }}>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel5a-content"
-                id="panel5a-header"
-              >
-                <Typography variant="h6">
-                  How can we improve and protect our mental health?
-                </Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Typography variant="body1">
-                  There are several ways to improve and protect mental health,
-                  including practicing self-care, maintaining social
-                  connections, staying physically active, managing stress
-                  effectively, getting enough sleep, and seeking professional
-                  help when needed.
-                </Typography>
-              </AccordionDetails>
-            </Accordion>
+      <Accordion sx={{ backgroundColor: "#fff", color: "black", mb: 2 }}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel5-content"
+          id="panel5-header"
+        >
+          <Typography variant="h6">How does SkillHive generate revenue?</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography variant="body1">
+            Revenue comes from premium features, promoted posts, commissions from freelance projects, online course sales, and partnerships with educational institutions.
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
 
-            <Accordion sx={{ backgroundColor: "#fff", color: "black", mb: 2 }}>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel6a-content"
-                id="panel6a-header"
-              >
-                <Typography variant="h6">
-                  What if I’m overwhelmed and don’t know where to start?
-                </Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Typography variant="body1">
-                  If you’re feeling overwhelmed, it’s important to reach out for
-                  support. Talk to a trusted friend, family member, or mental
-                  health professional who can provide guidance and help you
-                  navigate your feelings and options for support.
-                </Typography>
-              </AccordionDetails>
-            </Accordion>
-          </Box>
-        </Box>
+      <Accordion sx={{ backgroundColor: "#fff", color: "black", mb: 2 }}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel6-content"
+          id="panel6-header"
+        >
+          <Typography variant="h6">Is SkillHive accessible throughout Nepal?</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography variant="body1">
+            Yes, SkillHive is designed to be mobile-friendly and localized, making it accessible anywhere in Nepal.
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
+
+      <Accordion sx={{ backgroundColor: "#fff", color: "black", mb: 2 }}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel7-content"
+          id="panel7-header"
+        >
+          <Typography variant="h6">What are SkillHive’s future plans?</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography variant="body1">
+            Future plans include AI-powered talent matching, SkillHive Academy for learning, verified freelance marketplace, global expansion, and blockchain-based skill portfolios.
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
+    </Box>
       </Container>
     </>
   );

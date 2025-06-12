@@ -79,6 +79,7 @@ function Feed() {
   return (
     <>
       <Header />
+      
       <Grid container spacing={2}></Grid>
       <LandingPage />
       <GeolocationComponent />
