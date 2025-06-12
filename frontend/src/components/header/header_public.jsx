@@ -24,6 +24,8 @@ import { ShoppingCart, Search, Notifications } from "@material-ui/icons";
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { makeStyles } from "@material-ui/core/styles";
+import Subscriptions from "../Subscriptions/Subscriptions";
+
 const theme = createTheme(); // Create a theme
 
 const useStyles = makeStyles((theme) => ({
@@ -93,6 +95,7 @@ const HeaderPublic = () => {
   const [searchText, setSearchText] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const [showSubscription, setShowSubscription] = useState(false);
 
   const handleMenuClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -310,8 +313,30 @@ const HeaderPublic = () => {
                     )}
                   </Grid>
                 </Grid>
+
+
+                 <Grid item>
+                  <Button
+                    variant="outlined"
+                    sx={{
+                      textTransform: "none",
+                      borderColor: "#1976d2",
+                      color: "#1976d2",
+                      "&:hover": {
+                        backgroundColor: "#e3f2fd",
+                        borderColor: "#1976d2",
+                      },
+                    }}
+                    onClick={() => setShowSubscription(true)}
+                  >
+                    Subscription
+                  </Button>
+                </Grid>
+
               </Grid>
             </Grid>
+
+            <Subscriptions open={showSubscription} onClose={()=> setShowSubscription(false)}/> 
           </Grid>
 
           <Container>

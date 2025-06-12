@@ -9,6 +9,7 @@ import FreeTimeSlots from "../../Appointment/Free_Slot_Time";
 import AppointmentPlacementsList from "../../Appointment/appoint_placed";
 import Community from "../../community/Community";
 import UserPostsBlogs from "../../community/UserPostBlogs";
+import JobPosts from "../../JobPosts/JobPosts";
 
 const AnnoyUser = () => {
   const navigate = useNavigate();
@@ -54,6 +55,7 @@ const AnnoyUser = () => {
         </Grid>
         <Grid item md={8}>
           <UserPostsBlogs/>
+     
           <br />
         </Grid>
       </Grid>

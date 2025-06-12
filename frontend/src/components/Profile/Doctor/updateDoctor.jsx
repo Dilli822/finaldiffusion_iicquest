@@ -169,7 +169,7 @@ const DoctorProfileUpdate = () => {
           alignItems="center"
           style={{ marginTop: "12px" }}
         >
-          <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+          <form onSubmit={handleSubmit} >
             <Box
               style={{
                 maxWidth: "100%",

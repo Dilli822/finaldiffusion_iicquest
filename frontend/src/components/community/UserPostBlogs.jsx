@@ -24,6 +24,7 @@ import {
   FormControl,
   InputLabel,
   Select,
+  Collapse
 } from "@mui/material";
 
 import {
@@ -411,6 +412,12 @@ function UserPostsBlogs() {
     handlePostMenuClose();
   };
 
+
+   const [open, setOpen] = useState(false);
+
+  const userId = localStorage.getItem("userId");
+
+
   // Render Functions
   const renderComment = (postId, comment) => (
     <Box key={comment.id} sx={{ mb: 2 }}>
@@ -621,8 +628,8 @@ function UserPostsBlogs() {
       {/* {accessToken ? <Header /> : <HeaderPublic />} */}
       <Container maxWidth="lg">
         <Box p={4}>
-          <Typography variant="h4" gutterBottom>
-            Jobs Portals, Events & Competitions
+          <Typography variant="h5" gutterBottom>
+          Create Your Posts | Videos| Reels Here.
           </Typography>
 
           {/* Search Bar */}
@@ -839,7 +846,24 @@ function UserPostsBlogs() {
           </Card>
 
           {/* Posts List */}
-         
+                 <Box>
+      <Button 
+        variant="contained" 
+        onClick={() => setOpen(!open)} 
+        sx={{ mb: 2 }}
+      >
+        {open ? 'Hide My Posts' : 'Show My Posts'}
+      </Button>
+
+      <Collapse in={open}>
+        <Box>
+          {filteredPosts
+            .filter(({ post }) => String(post.author) === String(userId))
+            .sort((a, b) => new Date(b.post.created_at) - new Date(a.post.created_at))
+            .map(renderPost)}
+        </Box>
+      </Collapse>
+    </Box>
         </Box>
       </Container>
 

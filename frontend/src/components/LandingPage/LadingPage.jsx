@@ -10,6 +10,7 @@ import {
   Button,
   Grid,
 } from "@mui/material";
+import GeminiChatBotApp from "../ChatBot/ChatBot";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Emergency from "../Emergency/Emergency";
 import Widget from "../Widget/Widget";
@@ -245,6 +246,10 @@ export default function LandingPage() {
             </AccordionDetails>
           </Accordion>
         </Box>
+
+
+<GeminiChatBotApp/>
+
       </Container>
     </>
   );

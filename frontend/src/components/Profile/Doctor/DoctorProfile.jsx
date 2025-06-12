@@ -59,14 +59,14 @@ const DoctorProfile = () => {
       <Header />
       <Container maxWidth={"lg"}>
         <Grid container spacing={1}>
-          <Grid item md={4}>
+          <Grid item md={2}>
             <DoctorProfileUpdate />
           </Grid>
-          <Grid item md={9}>
+          <Grid item md={7}>
             {/* <BlogPosts/> */}
             {/* <AppointmentToDoctors /> */}
-            {/* <JobPosts/> */}
-            <JobPostsLists/>
+            <JobPosts/>
+            {/* <JobPostsLists/> */}
 
           </Grid>
         </Grid>

@@ -482,7 +482,7 @@ function JobPosts() {
             <Box>
               <Typography variant="h6">{post.title}</Typography>
               <Typography variant="caption" color="textSecondary">
-                Posted by {post.author} on{" "}
+                Posted by #{post.author} on{" "} {post.created_at}
                 {post.image && (
                   <img
                     src={post.image}
@@ -839,12 +839,23 @@ function JobPosts() {
           </Card>
 
           {/* Posts List */}
-          {filteredPosts
+          {/* {filteredPosts
             .sort(
               (a, b) =>
                 new Date(b.post.created_at) - new Date(a.post.created_at)
             )
-            .map(renderPost)}
+            .map(renderPost)} */}
+        </Box>
+
+        <Box>
+
+          {filteredPosts
+  .filter(item => {
+    const userId = localStorage.getItem("userId");
+    return String(item.post.author) === String(userId); // ensures string comparison
+  })
+  .sort((a, b) => new Date(b.post.created_at) - new Date(a.post.created_at))
+  .map(renderPost)}
         </Box>
       </Container>
 

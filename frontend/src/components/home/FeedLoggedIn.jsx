@@ -31,85 +31,9 @@ export default function LandingPageLogged() {
       {/* <Emergency /> */}
       {/* <Carousel/> */}
       <Container maxWidth={"lg"}>
-        <Grid
-          container
-          mt={"5rem"}
-          style={{ display: "flex", alignItems: "center" }}
-        >
-          <Grid item md={7}>
-            <Typography gutterBottom sx={{ fontSize: "48px", fontWeight: "" }}>
-              SkillHive
-            </Typography>
-            <Typography gutterBottom sx={{ fontSize: "32px", fontWeight: "" }}>
-              The Hive Where Talents & Skill Thrive
-            </Typography>
-            Talented individuals in Nepal often lack exposure, trusted
-            platforms, and access to the right opportunities. There's a gap in
-            connecting talents directly with recruiters, mentors, or project
-            hosts, leading to underused potential.
-          </Grid>
-
-          <Grid item md={5}>
-            {/* <img src={Banner} alt="" style={{ maxWidth: "100%"}} /> */}
-          </Grid>
-          {/* Add content inside the Grid if needed */}
-        </Grid>
-        <br />
-        <br />
-        <br />
-        <br />
-        {/* <Join /> */}
-
-        <br />
-        <br />
-        <br />
-        {/* <Widget /> */}
-        <hr />
-
-        {/* <DoctorsList /> */}
-        <br />
-        <br />
+        
         {/* <EmergencySupport/> */}
-
-        <Typography gutterBottom sx={{ fontSize: "48px", fontWeight: "" }}>
-          Services
-        </Typography>
-
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <div style={{ width: "33%" }}>
-            <img
-              src={LiveShare}
-              alt="3"
-              style={{ width: "100%", height: "auto", display: "block" }}
-            />
-          </div>
-          <div style={{ width: "33%" }}>
-            <img
-              src={FeaturesPoster}
-              alt="3"
-              style={{ width: "100%", height: "auto", display: "block" }}
-            />
-          </div>
-          <div style={{ width: "33%" }}>
-            <img
-              src={VideoCall}
-              alt="3"
-              style={{ width: "100%", height: "auto", display: "block" }}
-            />
-          </div>
-        </div>
-
-        <br />
-        <br />
-        <hr></hr>
-        <br />
-
+<br /><br />
         <Community />
         <hr></hr>
         <Typography gutterBottom sx={{ fontSize: "48px", fontWeight: "" }}>

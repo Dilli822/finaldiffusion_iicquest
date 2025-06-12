@@ -437,25 +437,28 @@ export default function PublicPost() {
             <Box>
               <Typography variant="h6">{post.title}</Typography>
               <Typography variant="caption" color="textSecondary">
-                Posted by {post.author} on{" "}
+                Posted by {post.author} on{" "} {post.created_at}
+                </Typography>
+                <div> 
         {post.image && (
         <img
-          src={post.image}
+         src={`http://localhost:8000${post.image}`}
           alt={post.title}
-          style={{ maxWidth: '100%', marginTop: 16 }}
+          style={{ maxWidth: '100%', height: "300px", marginTop: 16 }}
         />
       )}
-
+      </div>
+<div> 
       {post.video && (
         <video
-          src={post.video}
+          src={`http://localhost:8000${post.video}`}
           controls
           style={{ width: '100%', marginTop: 16 }}
         >
           Your browser does not support the video tag.
         </video>
       )}
-              </Typography>
+           </div>   
                <Typography variant="h6">{post.title}</Typography>
             </Box>
           </Box>
@@ -570,8 +573,8 @@ export default function PublicPost() {
       {accessToken ? <Header /> : <HeaderPublic />}
       <Container maxWidth="lg">
         <Box p={4}>
-          <Typography variant="h4" gutterBottom>
-            POST VIDEOS & REELS
+          <Typography variant="h5" gutterBottom>
+            POSTS, VIDEOS & REELS
           </Typography>
 
           {/* Search Bar */}
@@ -590,9 +593,12 @@ export default function PublicPost() {
             sx={{ mb: 4 }}
           />
           
-          <div>
-            filter
-          </div>
+        <Typography variant="h6" component="div">
+          Results:
+        </Typography>
+        <hr></hr>
+
+        <br />
 
           {filteredPosts
             .sort((a, b) => new Date(b.post.created_at) - new Date(a.post.created_at))

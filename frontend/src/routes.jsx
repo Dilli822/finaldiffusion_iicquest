@@ -23,6 +23,7 @@ import ChatRoom from "./components/LiveChat/liveChatRoom";
 import AiNews from "./components/News/AiNews";
 import BlogPosts from "./components/JobPosts/BlogsPosts";
 import SearchComponent from "./components/Search/Searching";
+import PublicPost from "./components/PublicPosts/publicPosts"
 
 export default function MainRouter() {
   return (
@@ -51,6 +52,7 @@ export default function MainRouter() {
       <Route path="/ainews" element={<AiNews />} />
       <Route path="/blogPostsTS" element={<BlogPosts />} />
       <Route path="/searching" element={<SearchComponent />} />
+      <Route path="/PublicPost" element={<PublicPost />} />
     </Routes>
 
   );

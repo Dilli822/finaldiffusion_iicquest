@@ -479,7 +479,7 @@ function LimitedPosts() {
               <img
                 src={`http://localhost:8000/${post.image}`}
                 alt={post.title}
-                style={{ maxWidth: "100%", borderRadius: 8, marginBottom: 16 }}
+                style={{ maxWidth: "100%", height: "300px", borderRadius: 8, marginBottom: 16 }}
               />
             )}
             {/* Video (if any) */}
